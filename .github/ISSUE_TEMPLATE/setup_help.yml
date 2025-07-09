@@ -1,0 +1,77 @@
+name: Setup Help
+description: Get help with installation and configuration
+title: '[SETUP] '
+labels: ['help wanted', 'setup']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for using the Jira Activity Timeline MCP Server! 
+        Please fill out this form to get help with setup.
+
+  - type: dropdown
+    id: installation-method
+    attributes:
+      label: Installation Method
+      description: How did you install the server?
+      options:
+        - NPM global install
+        - NPM local install
+        - Direct from GitHub
+        - Other (please specify)
+    validations:
+      required: true
+
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Configuration
+      description: Your .env configuration (remove sensitive data)
+      placeholder: |
+        JIRA_URL=https://your-company.atlassian.net
+        JIRA_PROJECT_KEY=PROJ
+        # ... other non-sensitive config
+    validations:
+      required: true
+
+  - type: textarea
+    id: claude-config
+    attributes:
+      label: Claude Desktop Configuration
+      description: Your Claude Desktop MCP configuration
+      placeholder: |
+        {
+          "mcpServers": {
+            "jira-activitytimeline": {
+              "command": "jira-mcp-server",
+              "args": []
+            }
+          }
+        }
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue-description
+    attributes:
+      label: What's not working?
+      description: Describe the issue you're experiencing
+      placeholder: Tell us what you're trying to do and what's not working
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      placeholder: e.g. macOS 14.0, Windows 11, Ubuntu 22.04
+    validations:
+      required: true
+
+  - type: input
+    id: node-version
+    attributes:
+      label: Node.js Version
+      placeholder: e.g. 18.0.0
+    validations:
+      required: true

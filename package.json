@@ -1,25 +1,64 @@
 {
+  "name": "jira-activitytimeline-server",
+  "version": "1.0.0",
+  "description": "MCP server for comprehensive Jira integration including time logging, task creation, activity timeline management, and bulk story imports",
+  "main": "build/index.js",
+  "type": "commonjs",
+  "bin": {
+    "jira-activitytimeline-server": "./build/index.js"
+  },
+  "files": [
+    "build/",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "mcp",
+    "jira",
+    "time-logging",
+    "task-management",
+    "activity-timeline",
+    "bulk-import",
+    "model-context-protocol",
+    "atlassian",
+    "project-management"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/jira-activitytimeline-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/jira-activitytimeline-server/issues"
+  },
+  "homepage": "https://github.com/yourusername/jira-activitytimeline-server#readme",
+  "author": "Uzair Fayyaz <uzairfayyaz@gmail.com>",
+  "license": "MIT",
   "scripts": {
-    "start": "npm run build && node dist/index.js",
+    "start": "npm run build && node build/index.js",
     "build": "tsc",
-    "dev": "tsx src/index.ts"
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-code": "^1.0.44",
+    "@modelcontextprotocol/sdk": "^1.13.2",
+    "axios": "^1.10.0",
+    "csv-parse": "^5.6.0",
+    "dotenv": "^16.4.5",
+    "node-fetch": "^2.7.0",
+    "xlsx": "^0.18.5",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.7",
+    "@types/node-fetch": "^2.6.12",
     "ts-node": "^10.9.2",
     "tsx": "^4.16.2",
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.13.2",
-    "axios": "^1.10.0",
-    "dotenv": "^16.4.5",
-    "zod": "^3.25.67"
-  },
-  "name": "jira-activitytimeline-server",
-  "version": "1.0.0",
-  "description": "MCP server for logging time to Jira issues",
-  "main": "dist/index.js",
-  "type": "commonjs"
+  }
 }

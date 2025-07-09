@@ -1,5 +1,7 @@
 # Environment variables
 .env
+.env.local
+.env.*.local
 
 # Node
 node_modules/
@@ -17,4 +19,22 @@ lerna-debug.log*
 .Spotlight-V100
 .Trashes
 ehthumbs.db
-Thumbs.db 
+Thumbs.db
+
+# Development files
+*.log
+*.csv
+*.tgz
+*.md.backup
+
+# IDE
+.vscode/
+.idea/
+
+# Development scripts
+debug-*.js
+test-*.js
+check-*.js
+
+# Build artifacts
+build/
