@@ -9,8 +9,12 @@
   },
   "files": [
     "build/",
+    "src/",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "package.json",
+    "tsconfig.json",
+    ".env.example"
   ],
   "keywords": [
     "mcp",
@@ -25,18 +29,19 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/jira-activitytimeline-server.git"
+    "url": "https://github.com/techrivers/jiramcp.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/jira-activitytimeline-server/issues"
+    "url": "https://github.com/techrivers/jiramcp/issues"
   },
-  "homepage": "https://github.com/yourusername/jira-activitytimeline-server#readme",
+  "homepage": "https://github.com/techrivers/jiramcp#readme",
   "author": "Uzair Fayyaz <uzairfayyaz@gmail.com>",
   "license": "MIT",
   "scripts": {
     "start": "npm run build && node build/index.js",
     "build": "tsc",
     "dev": "tsx src/index.ts",
+    "postinstall": "npm run build",
     "prepublishOnly": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

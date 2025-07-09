@@ -37,4 +37,4 @@ test-*.js
 check-*.js
 
 # Build artifacts
-build/
+# build/ - commented out for GitHub distribution
