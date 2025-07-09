@@ -1,185 +1,188 @@
-# Jira Activity Timeline MCP Server
+# 🚀 Jira Activity Timeline MCP Server
 
-A Model Context Protocol (MCP) server that provides comprehensive Jira integration including time logging, task creation, activity timeline management, and bulk story imports.
+A comprehensive Model Context Protocol (MCP) server for Jira integration with Claude Desktop. Provides time logging, task creation, bulk imports, and activity timeline management.
 
-## Features
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub stars](https://img.shields.io/github/stars/techrivers/jiramcp.svg)](https://github.com/techrivers/jiramcp/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/techrivers/jiramcp.svg)](https://github.com/techrivers/jiramcp/issues)
 
-### Core Capabilities
-- ✅ **Time Logging**: Log work time to Jira issues with detailed comments
-- ✅ **Task Creation**: Create new Jira stories, bugs, and tasks
-- ✅ **Activity Timeline**: Track and manage time entries with the Activity Timeline plugin
-- ✅ **Bulk Import**: Convert spreadsheets to Jira stories efficiently
-- ✅ **Time Reports**: Generate comprehensive time reports with filtering
+## ✨ Features
 
-### Available Tools
+### 🎯 Core Capabilities
+- **⏱️ Time Logging** - Log work time to Jira issues with detailed comments
+- **📝 Task Creation** - Create new Jira stories, bugs, and tasks with full field support
+- **📊 Bulk Import** - Convert Excel/Google Sheets to Jira stories efficiently
+- **📈 Activity Timeline** - Track and manage time entries with Activity Timeline plugin
+- **📋 Time Reports** - Generate comprehensive time reports with filtering
+- **🔄 Bulk Operations** - Import multiple time entries at once
+
+### 🛠️ Available Tools
 - `logTime` - Log work time to specific Jira issues
-- `createTask` - Create new Jira issues with full field support
-- `addTimeEntry` - Add time entries to Activity Timeline
+- `createTask` - Create new Jira issues with comprehensive field support
+- `sheetToJiraStories` - Convert spreadsheets to Jira stories
+- `addTimeEntry` - Add detailed time entries to Activity Timeline
 - `updateTimeEntry` - Update existing time entries
 - `deleteTimeEntry` - Remove time entries
-- `getTimeline` - Retrieve timeline data with filters
-- `getTimeReport` - Generate time reports
-- `bulkImportTimeEntries` - Import multiple time entries
-- `sheetToJiraStories` - Convert Excel/Google Sheets to Jira stories
+- `getTimeline` - Retrieve timeline data with advanced filters
+- `getTimeReport` - Generate time reports (JSON/CSV/Excel)
+- `bulkImportTimeEntries` - Import multiple time entries efficiently
 
-## Quick Start
+## 🚀 Zero Installation Setup
 
-### Installation
-```bash
-# No installation needed - npx handles it automatically
-# OR install globally if preferred:
-npm install -g jira-activitytimeline-server
-```
+**No NPM installation required!** Users just add configuration and restart Claude Desktop.
 
-### Configuration
-1. Copy the environment template:
-```bash
-cp .env.example .env
-```
+### Step 1: Claude Desktop Configuration
+Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
-2. Configure your Jira settings in `.env`:
-```env
-JIRA_URL=https://your-domain.atlassian.net
-JIRA_USERNAME=your-email@company.com
-JIRA_API_TOKEN=your-api-token
-JIRA_PROJECT_KEY=YOUR-PROJECT
-```
-
-### Usage with Claude Desktop
-
-Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/claude_desktop_config.json`):
 ```json
 {
   "mcpServers": {
     "jira-activitytimeline": {
       "command": "npx",
-      "args": ["-y", "jira-activitytimeline-server"]
+      "args": ["-y", "https://github.com/techrivers/jiramcp.git"]
     }
   }
 }
 ```
 
-**Alternative (if installed globally):**
-```json
-{
-  "mcpServers": {
-    "jira-activitytimeline": {
-      "command": "jira-activitytimeline-server",
-      "args": []
-    }
-  }
-}
+### Step 2: Environment Configuration
+Create `~/.jira-mcp.env`:
+
+```env
+JIRA_URL=https://your-company.atlassian.net
+JIRA_USERNAME=your-email@company.com
+JIRA_API_TOKEN=your-api-token
+JIRA_PROJECT_KEY=PROJ
 ```
 
-## Configuration Guide
+### Step 3: Restart Claude Desktop
+Tools appear automatically - ready to use!
 
-### Required Environment Variables
-- `JIRA_URL`: Your Jira instance URL
-- `JIRA_USERNAME`: Your Jira username/email
-- `JIRA_API_TOKEN`: Your Jira API token ([Generate here](https://id.atlassian.com/manage-profile/security/api-tokens))
-- `JIRA_PROJECT_KEY`: Default project key
+## 💡 Example Usage
 
-### Optional Configuration
-- `JIRA_ACTIVITY_TIMELINE_ENABLED`: Enable Activity Timeline features
-- `JIRA_DEFAULT_ASSIGNEE`: Default assignee for new tasks
-- `JIRA_DEFAULT_PRIORITY`: Default priority level
-
-## Examples
-
-### Time Logging
-```javascript
-// Log 2 hours of work
-await logTime({
-  issueKey: "PROJ-123",
-  timeSpent: "2h",
-  comment: "Implemented user authentication. Billable: Yes"
-});
+```
+"Log 2 hours of work to PROJ-123 for implementing user authentication"
+"Create a new story for dashboard analytics feature with 8 story points"
+"Import stories from my Google Sheet: https://docs.google.com/spreadsheets/d/..."
+"Generate a time report for the last month in CSV format"
+"Add 4 hours of frontend development time to PROJ-456"
 ```
 
-### Task Creation
-```javascript
-// Create a new story
-await createTask({
-  project: "PROJ",
-  summary: "User Authentication System",
-  description: "Implement secure login functionality",
-  priority: "High",
-  assignee: "developer@company.com",
-  storyPointEstimate: 8
-});
+## 🔧 Advanced Configuration
+
+### Optional Environment Variables
+```env
+# Optional settings
+JIRA_DEFAULT_ASSIGNEE=team-lead@company.com
+JIRA_DEFAULT_PRIORITY=Medium
+JIRA_ACTIVITY_TIMELINE_ENABLED=true
 ```
 
-### Bulk Import
-```javascript
-// Import stories from spreadsheet
-await sheetToJiraStories({
-  googleSheetLink: "https://docs.google.com/spreadsheets/d/..."
-});
+### Custom Field Support
+The server supports custom fields for comprehensive task creation:
+- Story point estimation
+- Frontend/Backend/QA hour estimates
+- Acceptance criteria
+- Fix versions
+- Custom labels and sprint assignment
+
+## 📊 Bulk Import Features
+
+### Spreadsheet to Jira Stories
+Convert Excel files or Google Sheets to Jira stories with:
+- Automatic field mapping
+- Bulk validation
+- Error reporting
+- Progress tracking
+
+### Example Spreadsheet Format
+```csv
+Summary,Description,Priority,Assignee,Story Points,Labels
+User Authentication,Implement secure login,High,dev@company.com,8,security
+Dashboard Widget,Analytics dashboard,Medium,frontend@company.com,5,frontend
+API Integration,Third-party API,Low,backend@company.com,3,backend
 ```
 
-## Advanced Usage
+## 🔍 What Happens Behind the Scenes
 
-### Activity Timeline Integration
-Requires the Activity Timeline plugin in Jira:
-```javascript
-// Add detailed time entry
-await addTimeEntry({
-  issueKey: "PROJ-123",
-  timeSpent: "4h",
-  activityType: "Development",
-  billableHours: 4,
-  comment: "Backend API development"
-});
-```
+1. **NPX downloads** latest version from GitHub
+2. **Automatically installs** dependencies (`npm install`)
+3. **Builds TypeScript** (`npm run build`)
+4. **Starts MCP server** with stdio transport
+5. **Registers tools** with Claude Desktop
+6. **Ready for use** - no manual steps required!
 
-### Time Reports
-```javascript
-// Generate team time report
-await getTimeReport({
-  dateFrom: "2025-01-01",
-  dateTo: "2025-01-31",
-  projectKey: "PROJ",
-  format: "csv"
-});
-```
+## 📚 Documentation
 
-## Troubleshooting
+- **[Installation Guide](./INSTALLATION.md)** - Detailed setup instructions
+- **[Configuration Guide](./CONFIG_ONLY_GUIDE.md)** - Zero-installation setup
+- **[Quick Start](./QUICK_START.md)** - Get started in 3 steps
+- **[Contributing](./CONTRIBUTING.md)** - Development guidelines
+
+## 🔐 Getting Your Jira API Token
+
+1. Visit https://id.atlassian.com/manage-profile/security/api-tokens
+2. Click "Create API token"
+3. Give it a name (e.g., "Claude MCP Server")
+4. Copy the token to your `.jira-mcp.env` file
+
+**Never share your API token publicly!**
+
+## 🐛 Troubleshooting
 
 ### Common Issues
 
-**Authentication Error**
-- Verify your API token is valid
-- Check your username/email format
-- Ensure you have proper Jira permissions
-
-**Tool Not Found**
-- Verify the MCP server is running
-- Check your Claude Desktop configuration
+**Tools not appearing in Claude Desktop:**
+- Verify `.jira-mcp.env` file exists with correct values
 - Restart Claude Desktop after configuration changes
+- Check Claude Desktop logs for error messages
 
-**Time Logging Fails**
-- Ensure the issue key exists
-- Check you have permission to log time
-- Verify time format (e.g., "2h 30m")
+**Authentication errors:**
+- Verify Jira API token is valid and has proper permissions
+- Check username/email format
+- Ensure you have access to the specified project
+
+**NPX download fails:**
+- Ensure Node.js is installed (version 16+)
+- Check internet connection
+- Verify repository is accessible
 
 ### Debug Mode
-Enable debug logging by setting environment variable:
-```bash
+Enable debug logging by setting:
+```env
 DEBUG=true
 ```
 
-## Contributing
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md) for details.
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Add tests
+4. Add tests if applicable
 5. Submit a pull request
 
-## License
+## 📄 License
 
-MIT License - see LICENSE file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Support
+## 🆘 Support
 
-For issues and feature requests, please use the [GitHub Issues](https://github.com/yourusername/jira-activitytimeline-server/issues) page.
+- **Issues**: [GitHub Issues](https://github.com/techrivers/jiramcp/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/techrivers/jiramcp/discussions)
+- **Email**: uzairfayyaz@gmail.com
+
+## 🌟 Star History
+
+If you find this project helpful, please consider giving it a star! ⭐
+
+## 🎉 Ready to Get Started?
+
+Add the configuration to Claude Desktop and start supercharging your Jira workflow with AI! 
+
+**No installation, no compilation, just configuration and go!** 🚀
+
+---
+
+*Built with ❤️ for the MCP community*
