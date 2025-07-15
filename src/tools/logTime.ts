@@ -1,5 +1,6 @@
 import { z } from "zod";
 import axios, { AxiosRequestConfig } from "axios";
+import { dynamicConfig } from "../utils/configManager";
 
 // --- Interfaces for Jira API responses ---
 interface JiraWorklogResponse {
@@ -38,12 +39,13 @@ export function registerLogTimeTool(server: unknown) {
         "Logs a work entry to a specific Jira issue.",
         logTimeSchema.shape,
         async ({ issueKey, timeSpent, comment, started }: LogTimeInput) => {
-            const { JIRA_BASE_URL, JIRA_USER_EMAIL, JIRA_API_TOKEN } = process.env;
-            if (!JIRA_BASE_URL || !JIRA_USER_EMAIL || !JIRA_API_TOKEN) {
-                throw new Error("Jira environment variables are not configured. Check your .env file.");
+            const config = dynamicConfig.getConfig();
+            if (!dynamicConfig.isConfigured()) {
+                const missing = dynamicConfig.getMissingFields();
+                throw new Error(`❌ Jira configuration incomplete. Missing: ${missing.join(', ')}. Use the 'updateJiraConfiguration' tool to set up your Jira connection.`);
             }
 
-            const jiraUrl = `${JIRA_BASE_URL}/rest/api/3/issue/${issueKey}/worklog`;
+            const jiraUrl = `${config.url}/rest/api/3/issue/${issueKey}/worklog`;
             const requestBody = {
                 timeSpent,
                 ...(comment && {
@@ -58,8 +60,8 @@ export function registerLogTimeTool(server: unknown) {
                 ...(started && { started }),
             };
 
-            const authBuffer = Buffer.from(`${JIRA_USER_EMAIL}:${JIRA_API_TOKEN}`).toString("base64");
-            const config: AxiosRequestConfig = {
+            const authBuffer = Buffer.from(`${config.username}:${config.apiToken}`).toString("base64");
+            const axiosConfig: AxiosRequestConfig = {
                 headers: {
                     Authorization: `Basic ${authBuffer}`,
                     Accept: "application/json",
@@ -67,7 +69,7 @@ export function registerLogTimeTool(server: unknown) {
                 },
             };
 
-            const jiraResponse = await makeJiraRequest<JiraWorklogResponse>(jiraUrl, requestBody, config);
+            const jiraResponse = await makeJiraRequest<JiraWorklogResponse>(jiraUrl, requestBody, axiosConfig);
             return {
                 content: [
                     {

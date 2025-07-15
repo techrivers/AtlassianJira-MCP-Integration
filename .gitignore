@@ -31,10 +31,18 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Development scripts
+# Development scripts (keeping essential ones)
 debug-*.js
-test-*.js
-check-*.js
+# test-*.js - keep test-suite.js and test-new-tools.js
+# check-*.js - consolidated into test-suite.js
+
+# Ngrok artifacts
+ngrok-v3-*.tgz
+ngrok.log
+*.ngrok.io
 
 # Build artifacts
 # build/ - commented out for GitHub distribution
+
+# Temporary cleanup directory
+temp-cleanup/

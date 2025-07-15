@@ -44,8 +44,8 @@ async function sheetToJiraStoriesHandler(input) {
         return { created: 0, failed: 0, errors: [] };
     }
     // Initialize field mapper for dynamic field discovery
-    const JIRA_BASE_URL = process.env.JIRA_BASE_URL;
-    const JIRA_USER_EMAIL = process.env.JIRA_USER_EMAIL;
+    const JIRA_BASE_URL = process.env.JIRA_URL;
+    const JIRA_USER_EMAIL = process.env.JIRA_USERNAME;
     const JIRA_API_TOKEN = process.env.JIRA_API_TOKEN;
     if (!JIRA_BASE_URL || !JIRA_USER_EMAIL || !JIRA_API_TOKEN) {
         throw new Error('Jira environment variables are not configured. Check your .env file.');

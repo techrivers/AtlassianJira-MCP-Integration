@@ -1,6 +1,7 @@
 import { z } from "zod";
 import axios, { AxiosRequestConfig } from "axios";
 import { JiraFieldMapper } from '../utils/jiraFieldMapper';
+import { dynamicConfig } from "../utils/configManager";
 
 // --- Interfaces for Jira API responses ---
 interface JiraIssueResponse {
@@ -55,9 +56,10 @@ export function registerCreateTaskTool(server: unknown) {
         "Creates a new Jira issue/task.",
         createTaskSchema.shape,
         async (input: CreateTaskInput) => {
-            const { JIRA_BASE_URL, JIRA_USER_EMAIL, JIRA_API_TOKEN } = process.env;
-            if (!JIRA_BASE_URL || !JIRA_USER_EMAIL || !JIRA_API_TOKEN) {
-                throw new Error("Jira environment variables are not configured. Check your .env file.");
+            const config = dynamicConfig.getConfig();
+            if (!dynamicConfig.isConfigured()) {
+                const missing = dynamicConfig.getMissingFields();
+                throw new Error(`❌ Jira configuration incomplete. Missing: ${missing.join(', ')}. Use the 'updateJiraConfiguration' tool to set up your Jira connection.`);
             }
 
             const {
@@ -72,7 +74,7 @@ export function registerCreateTaskTool(server: unknown) {
             } = input;
 
             // Initialize field mapper for dynamic field discovery
-            const fieldMapper = new JiraFieldMapper(JIRA_BASE_URL, JIRA_USER_EMAIL, JIRA_API_TOKEN);
+            const fieldMapper = new JiraFieldMapper(config.url!, config.username!, config.apiToken!);
             
             // Create a mock row data combining all input fields
             const mockRow: Record<string, any> = {
@@ -99,9 +101,9 @@ export function registerCreateTaskTool(server: unknown) {
                 console.log(`createTask skipped fields: ${skippedFields.join(', ')}`);
             }
 
-            const jiraUrl = `${JIRA_BASE_URL}/rest/api/3/issue`;
-            const authBuffer = Buffer.from(`${JIRA_USER_EMAIL}:${JIRA_API_TOKEN}`).toString("base64");
-            const config: AxiosRequestConfig = {
+            const jiraUrl = `${config.url}/rest/api/3/issue`;
+            const authBuffer = Buffer.from(`${config.username}:${config.apiToken}`).toString("base64");
+            const axiosConfig: AxiosRequestConfig = {
                 headers: {
                     Authorization: `Basic ${authBuffer}`,
                     Accept: "application/json",
@@ -109,7 +111,7 @@ export function registerCreateTaskTool(server: unknown) {
                 },
             };
 
-            const jiraResponse = await makeJiraRequest<JiraIssueResponse>(jiraUrl, payload, config);
+            const jiraResponse = await makeJiraRequest<JiraIssueResponse>(jiraUrl, payload, axiosConfig);
             
             const appliedFields = Object.keys(validatedMapping).filter(key => validatedMapping[key] !== null);
             const skippedFieldsCount = skippedFields.length;

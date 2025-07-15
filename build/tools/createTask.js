@@ -7,6 +7,7 @@ exports.registerCreateTaskTool = registerCreateTaskTool;
 const zod_1 = require("zod");
 const axios_1 = __importDefault(require("axios"));
 const jiraFieldMapper_1 = require("../utils/jiraFieldMapper");
+const configManager_1 = require("../utils/configManager");
 // --- Helper function for making Jira API requests ---
 async function makeJiraRequest(url, data, config) {
     try {
@@ -44,13 +45,14 @@ const createTaskSchema = zod_1.z.object({
 function registerCreateTaskTool(server) {
     // @ts-expect-error: server.tool signature is not typed
     server.tool("createTask", "Creates a new Jira issue/task.", createTaskSchema.shape, async (input) => {
-        const { JIRA_BASE_URL, JIRA_USER_EMAIL, JIRA_API_TOKEN } = process.env;
-        if (!JIRA_BASE_URL || !JIRA_USER_EMAIL || !JIRA_API_TOKEN) {
-            throw new Error("Jira environment variables are not configured. Check your .env file.");
+        const config = configManager_1.dynamicConfig.getConfig();
+        if (!configManager_1.dynamicConfig.isConfigured()) {
+            const missing = configManager_1.dynamicConfig.getMissingFields();
+            throw new Error(`❌ Jira configuration incomplete. Missing: ${missing.join(', ')}. Use the 'updateJiraConfiguration' tool to set up your Jira connection.`);
         }
         const { project, summary, description, issueType = "Story", priority = "Medium", assignee, customFields, ...otherFields } = input;
         // Initialize field mapper for dynamic field discovery
-        const fieldMapper = new jiraFieldMapper_1.JiraFieldMapper(JIRA_BASE_URL, JIRA_USER_EMAIL, JIRA_API_TOKEN);
+        const fieldMapper = new jiraFieldMapper_1.JiraFieldMapper(config.url, config.username, config.apiToken);
         // Create a mock row data combining all input fields
         const mockRow = {
             'Summary': summary,
@@ -71,16 +73,16 @@ function registerCreateTaskTool(server) {
         if (skippedFields.length > 0) {
             console.log(`createTask skipped fields: ${skippedFields.join(', ')}`);
         }
-        const jiraUrl = `${JIRA_BASE_URL}/rest/api/3/issue`;
-        const authBuffer = Buffer.from(`${JIRA_USER_EMAIL}:${JIRA_API_TOKEN}`).toString("base64");
-        const config = {
+        const jiraUrl = `${config.url}/rest/api/3/issue`;
+        const authBuffer = Buffer.from(`${config.username}:${config.apiToken}`).toString("base64");
+        const axiosConfig = {
             headers: {
                 Authorization: `Basic ${authBuffer}`,
                 Accept: "application/json",
                 "Content-Type": "application/json",
             },
         };
-        const jiraResponse = await makeJiraRequest(jiraUrl, payload, config);
+        const jiraResponse = await makeJiraRequest(jiraUrl, payload, axiosConfig);
         const appliedFields = Object.keys(validatedMapping).filter(key => validatedMapping[key] !== null);
         const skippedFieldsCount = skippedFields.length;
         return {

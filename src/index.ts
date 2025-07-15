@@ -8,6 +8,7 @@ import { registerLogTimeTool } from "./tools/logTime";
 import { registerCreateTaskTool } from "./tools/createTask";
 import { registerActivityTimelineTools } from "./tools/activityTimeline";
 import { registerSheetToJiraStoriesTool } from "./tools/sheetToJiraStories";
+import { registerConfigurationTools } from "./tools/configurationTools";
 
 // Handle CLI arguments
 const args = process.argv.slice(2);
@@ -69,9 +70,10 @@ const server = new McpServer({
 });
 
 // Register tools from tools directory
+registerConfigurationTools(server);
 registerLogTimeTool(server);
 registerCreateTaskTool(server);
-registerActivityTimelineTools(server);
+// registerActivityTimelineTools(server); // DISABLED: Requires Activity Timeline plugin API access
 registerSheetToJiraStoriesTool(server);
 
 async function main() {

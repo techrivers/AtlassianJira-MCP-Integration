@@ -1,7 +1,7 @@
 {
   "name": "jira-activitytimeline-server",
   "version": "1.0.0",
-  "description": "MCP server for comprehensive Jira integration including time logging, task creation, activity timeline management, and bulk story imports",
+  "description": "Production-ready MCP server for Jira integration with dynamic configuration, time logging, task creation, and bulk imports",
   "main": "build/index.js",
   "type": "commonjs",
   "bin": {
@@ -21,11 +21,12 @@
     "jira",
     "time-logging",
     "task-management",
-    "activity-timeline",
     "bulk-import",
     "model-context-protocol",
     "atlassian",
-    "project-management"
+    "project-management",
+    "dynamic-configuration",
+    "remote-server"
   ],
   "repository": {
     "type": "git",
@@ -53,14 +54,11 @@
     "axios": "^1.10.0",
     "csv-parse": "^5.6.0",
     "dotenv": "^16.4.5",
-    "node-fetch": "^2.7.0",
     "xlsx": "^0.18.5",
     "zod": "^3.25.67"
   },
   "devDependencies": {
-    "@types/express": "^5.0.3",
     "@types/node": "^24.0.7",
-    "@types/node-fetch": "^2.6.12",
     "ts-node": "^10.9.2",
     "tsx": "^4.16.2",
     "typescript": "^5.8.3"

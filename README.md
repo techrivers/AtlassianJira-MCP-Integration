@@ -1,188 +1,348 @@
 # 🚀 Jira Activity Timeline MCP Server
 
-A comprehensive Model Context Protocol (MCP) server for Jira integration with Claude Desktop. Provides time logging, task creation, bulk imports, and activity timeline management.
+**Production-ready MCP server for Jira integration with dynamic configuration, time logging, task creation, and bulk imports.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub stars](https://img.shields.io/github/stars/techrivers/jiramcp.svg)](https://github.com/techrivers/jiramcp/stargazers)
-[![GitHub issues](https://img.shields.io/github/issues/techrivers/jiramcp.svg)](https://github.com/techrivers/jiramcp/issues)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/typescript-%5E5.0.0-blue)](https://www.typescriptlang.org/)
 
-## ✨ Features
+## ✨ **Key Features**
 
-### 🎯 Core Capabilities
-- **⏱️ Time Logging** - Log work time to Jira issues with detailed comments
-- **📝 Task Creation** - Create new Jira stories, bugs, and tasks with full field support
-- **📊 Bulk Import** - Convert Excel/Google Sheets to Jira stories efficiently
-- **📈 Activity Timeline** - Track and manage time entries with Activity Timeline plugin
-- **📋 Time Reports** - Generate comprehensive time reports with filtering
-- **🔄 Bulk Operations** - Import multiple time entries at once
+### 🔧 **Dynamic Configuration**
+- **No setup wizard needed** - Configure through conversation with Claude
+- **Real-time configuration updates** - Change settings without restart
+- **Intelligent suggestions** - Get help with configuration
+- **Connection testing** - Verify your Jira connection instantly
 
-### 🛠️ Available Tools
-- `logTime` - Log work time to specific Jira issues
-- `createTask` - Create new Jira issues with comprehensive field support
-- `sheetToJiraStories` - Convert spreadsheets to Jira stories
-- `addTimeEntry` - Add detailed time entries to Activity Timeline
-- `updateTimeEntry` - Update existing time entries
-- `deleteTimeEntry` - Remove time entries
-- `getTimeline` - Retrieve timeline data with advanced filters
-- `getTimeReport` - Generate time reports (JSON/CSV/Excel)
-- `bulkImportTimeEntries` - Import multiple time entries efficiently
+### 🛠️ **Production Tools**
+- **📝 Time Logging** - Log work time to Jira issues with comments
+- **📋 Task Creation** - Create comprehensive Jira issues with custom fields
+- **📊 Bulk Import** - Import multiple stories from spreadsheets
+- **⚙️ Configuration Management** - Dynamic Jira configuration tools
 
-## 🚀 Zero Installation Setup
+### 🌐 **Remote Ready**
+- **GitHub NPX deployment** - Install directly from GitHub
+- **Zero local setup** - Works immediately via Claude Desktop
+- **Secure configuration** - Local config file with masked sensitive data
 
-**No NPM installation required!** Users just add configuration and restart Claude Desktop.
+---
 
-### Step 1: Claude Desktop Configuration
-Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
+## 🚀 **Quick Start (Remote Installation)**
+
+### **For Claude Desktop Users:**
+
+**1. Add to Claude Desktop Configuration**
+
+Edit your Claude Desktop config file:
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
 
 ```json
 {
   "mcpServers": {
     "jira-activitytimeline": {
       "command": "npx",
-      "args": ["-y", "https://github.com/techrivers/jiramcp.git"]
+      "args": ["-y", "github:techrivers/jiramcp"]
     }
   }
 }
 ```
 
-### Step 2: Environment Configuration
-Create `~/.jira-mcp.env`:
+**2. Restart Claude Desktop**
 
-```env
-JIRA_URL=https://your-company.atlassian.net
-JIRA_USERNAME=your-email@company.com
-JIRA_API_TOKEN=your-api-token
-JIRA_PROJECT_KEY=PROJ
+**3. Configure Jira Connection**
+
+In your conversation with Claude, say:
+```
+"I need to set up my Jira connection"
 ```
 
-### Step 3: Restart Claude Desktop
-Tools appear automatically - ready to use!
+Claude will use the configuration tools to help you set up:
+- Jira URL (e.g., `https://your-company.atlassian.net`)
+- Username (your email)
+- API Token (from Atlassian)
+- Project key (optional default)
 
-## 💡 Example Usage
+**4. Start Using**
 
-```
-"Log 2 hours of work to PROJ-123 for implementing user authentication"
-"Create a new story for dashboard analytics feature with 8 story points"
-"Import stories from my Google Sheet: https://docs.google.com/spreadsheets/d/..."
-"Generate a time report for the last month in CSV format"
-"Add 4 hours of frontend development time to PROJ-456"
-```
-
-## 🔧 Advanced Configuration
-
-### Optional Environment Variables
-```env
-# Optional settings
-JIRA_DEFAULT_ASSIGNEE=team-lead@company.com
-JIRA_DEFAULT_PRIORITY=Medium
-JIRA_ACTIVITY_TIMELINE_ENABLED=true
-```
-
-### Custom Field Support
-The server supports custom fields for comprehensive task creation:
-- Story point estimation
-- Frontend/Backend/QA hour estimates
-- Acceptance criteria
-- Fix versions
-- Custom labels and sprint assignment
-
-## 📊 Bulk Import Features
-
-### Spreadsheet to Jira Stories
-Convert Excel files or Google Sheets to Jira stories with:
-- Automatic field mapping
-- Bulk validation
-- Error reporting
-- Progress tracking
-
-### Example Spreadsheet Format
-```csv
-Summary,Description,Priority,Assignee,Story Points,Labels
-User Authentication,Implement secure login,High,dev@company.com,8,security
-Dashboard Widget,Analytics dashboard,Medium,frontend@company.com,5,frontend
-API Integration,Third-party API,Low,backend@company.com,3,backend
-```
-
-## 🔍 What Happens Behind the Scenes
-
-1. **NPX downloads** latest version from GitHub
-2. **Automatically installs** dependencies (`npm install`)
-3. **Builds TypeScript** (`npm run build`)
-4. **Starts MCP server** with stdio transport
-5. **Registers tools** with Claude Desktop
-6. **Ready for use** - no manual steps required!
-
-## 📚 Documentation
-
-- **[Installation Guide](./INSTALLATION.md)** - Detailed setup instructions
-- **[Configuration Guide](./CONFIG_ONLY_GUIDE.md)** - Zero-installation setup
-- **[Quick Start](./QUICK_START.md)** - Get started in 3 steps
-- **[Contributing](./CONTRIBUTING.md)** - Development guidelines
-
-## 🔐 Getting Your Jira API Token
-
-1. Visit https://id.atlassian.com/manage-profile/security/api-tokens
-2. Click "Create API token"
-3. Give it a name (e.g., "Claude MCP Server")
-4. Copy the token to your `.jira-mcp.env` file
-
-**Never share your API token publicly!**
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**Tools not appearing in Claude Desktop:**
-- Verify `.jira-mcp.env` file exists with correct values
-- Restart Claude Desktop after configuration changes
-- Check Claude Desktop logs for error messages
-
-**Authentication errors:**
-- Verify Jira API token is valid and has proper permissions
-- Check username/email format
-- Ensure you have access to the specified project
-
-**NPX download fails:**
-- Ensure Node.js is installed (version 16+)
-- Check internet connection
-- Verify repository is accessible
-
-### Debug Mode
-Enable debug logging by setting:
-```env
-DEBUG=true
-```
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md) for details.
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-- **Issues**: [GitHub Issues](https://github.com/techrivers/jiramcp/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/techrivers/jiramcp/discussions)
-- **Email**: uzairfayyaz@gmail.com
-
-## 🌟 Star History
-
-If you find this project helpful, please consider giving it a star! ⭐
-
-## 🎉 Ready to Get Started?
-
-Add the configuration to Claude Desktop and start supercharging your Jira workflow with AI! 
-
-**No installation, no compilation, just configuration and go!** 🚀
+Once configured, you can immediately:
+- Log time: *"Log 2 hours to PROJ-123 for backend development"*
+- Create tasks: *"Create a new story for user authentication"*
+- Import stories: *"Import these tasks from my spreadsheet"*
 
 ---
 
-*Built with ❤️ for the MCP community*
+## 🔧 **Configuration Management**
+
+### **Available Configuration Tools:**
+
+| Tool | Description | Usage |
+|------|-------------|--------|
+| `getJiraConfiguration` | View current configuration status | Check what's configured |
+| `updateJiraConfiguration` | Update configuration settings | Change URL, credentials, etc. |
+| `testJiraConnection` | Test your Jira connection | Verify setup works |
+| `resetJiraConfiguration` | Reset all configuration | Start fresh |
+| `suggestJiraConfiguration` | Get configuration suggestions | Get help with setup |
+
+### **Example Configuration Flow:**
+
+```
+User: "I need to update my Jira URL"
+Claude: [calls getJiraConfiguration to check current status]
+Claude: [calls updateJiraConfiguration with new URL]
+Claude: [calls testJiraConnection to verify]
+Claude: "✅ Your Jira URL has been updated and tested successfully!"
+```
+
+### **Configuration File Location:**
+- **macOS/Linux**: `~/.jira-mcp.env`
+- **Windows**: `C:\\Users\\{username}\\.jira-mcp.env`
+
+---
+
+## 🛠️ **Available Tools**
+
+### **📝 Core Tools:**
+- **`logTime`** - Log work time to Jira issues with detailed comments
+- **`createTask`** - Create comprehensive Jira issues with custom fields
+- **`sheetToJiraStories`** - Bulk import stories from Excel/CSV files
+
+### **⚙️ Configuration Tools:**
+- **`getJiraConfiguration`** - View current configuration status
+- **`updateJiraConfiguration`** - Update Jira connection settings
+- **`testJiraConnection`** - Test your Jira connection
+- **`resetJiraConfiguration`** - Reset all configuration
+- **`suggestJiraConfiguration`** - Get configuration suggestions
+
+### **🚫 Temporarily Disabled:**
+- **`getTimeline`** - Requires Activity Timeline plugin API (see [Re-enabling](#re-enabling-activity-timeline-tools))
+
+---
+
+## 🔐 **Security & Privacy**
+
+### **Configuration Security:**
+- ✅ **Local storage** - All configuration stored locally on your machine
+- ✅ **Masked sensitive data** - API tokens never displayed in full
+- ✅ **No cloud storage** - Configuration never sent to external servers
+- ✅ **Secure transmission** - HTTPS-only communication with Jira
+
+### **API Token Setup:**
+1. Visit [Atlassian API Tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
+2. Create a new token with appropriate permissions
+3. Use the token in your configuration (stored securely locally)
+
+---
+
+## 📊 **Usage Examples**
+
+### **Initial Setup:**
+```
+User: "Help me set up Jira integration"
+Claude: [calls getJiraConfiguration]
+Claude: "I can help you configure Jira. Let me start by checking your current setup..."
+Claude: [calls suggestJiraConfiguration]
+Claude: "Here's what you need to configure: URL, username, and API token."
+```
+
+### **Time Logging:**
+```
+User: "Log 3 hours to PROJ-123 for fixing authentication bugs"
+Claude: [calls logTime]
+Claude: "✅ Successfully logged 3 hours to PROJ-123 with comment about authentication bugs."
+```
+
+### **Task Creation:**
+```
+User: "Create a story for implementing user dashboard with high priority"
+Claude: [calls createTask]
+Claude: "✅ Created story PROJ-124: User Dashboard Implementation (High priority)"
+```
+
+### **Configuration Updates:**
+```
+User: "I need to switch to a different Jira instance"
+Claude: [calls updateJiraConfiguration with new URL]
+Claude: [calls testJiraConnection]
+Claude: "✅ Successfully updated to new Jira instance and verified connection."
+```
+
+---
+
+## 🔄 **Re-enabling Activity Timeline Tools**
+
+The Activity Timeline tools are disabled because they require the Activity Timeline plugin API. To re-enable:
+
+1. **Install Activity Timeline Plugin** in your Jira instance
+2. **Verify API Access** - Check that `/rest/activitytimeline/1.0/` endpoints are available
+3. **Contact Support** - Request re-enabling of timeline tools
+4. **Tools Available After Re-enabling:**
+   - `getTimeline` - Retrieve activity timeline data
+   - `addTimeEntry` - Add time entries to timeline
+   - `updateTimeEntry` - Update existing time entries
+   - `deleteTimeEntry` - Remove time entries
+   - `getTimeReport` - Generate timeline reports
+
+---
+
+## 🚀 **Deployment Options**
+
+### **Option 1: NPX (Recommended)**
+```json
+{
+  "mcpServers": {
+    "jira-activitytimeline": {
+      "command": "npx",
+      "args": ["-y", "github:techrivers/jiramcp"]
+    }
+  }
+}
+```
+
+### **Option 2: Local Installation**
+```bash
+# Clone and build locally
+git clone https://github.com/techrivers/jiramcp.git
+cd jiramcp
+npm install
+npm run build
+```
+
+```json
+{
+  "mcpServers": {
+    "jira-activitytimeline": {
+      "command": "node",
+      "args": ["./build/index.js"],
+      "cwd": "/path/to/jiramcp"
+    }
+  }
+}
+```
+
+### **Option 3: Global Installation**
+```bash
+npm install -g github:techrivers/jiramcp
+```
+
+```json
+{
+  "mcpServers": {
+    "jira-activitytimeline": {
+      "command": "jira-activitytimeline-server"
+    }
+  }
+}
+```
+
+---
+
+## 🔧 **Advanced Configuration**
+
+### **Environment Variables (Optional):**
+You can also use environment variables instead of the configuration file:
+
+```bash
+export JIRA_URL="https://your-company.atlassian.net"
+export JIRA_USERNAME="your-email@company.com"
+export JIRA_API_TOKEN="your-api-token"
+export JIRA_PROJECT_KEY="PROJ"
+export JIRA_DEFAULT_ASSIGNEE="team-lead@company.com"
+export JIRA_DEFAULT_PRIORITY="Medium"
+```
+
+### **Multiple Jira Instances:**
+The dynamic configuration system supports switching between different Jira instances:
+
+```
+User: "Switch to my staging Jira environment"
+Claude: [calls updateJiraConfiguration with staging URL]
+Claude: "✅ Switched to staging environment. Ready to work with staging Jira."
+```
+
+---
+
+## 📈 **Troubleshooting**
+
+### **Common Issues:**
+
+**Connection Failed:**
+```
+User: "My Jira connection isn't working"
+Claude: [calls testJiraConnection]
+Claude: [calls getJiraConfiguration]
+Claude: "I found the issue. Let me help you update your API token..."
+```
+
+**Configuration Problems:**
+```
+User: "I'm getting configuration errors"
+Claude: [calls getJiraConfiguration]
+Claude: [calls suggestJiraConfiguration]
+Claude: "Here are the missing configuration fields and suggestions..."
+```
+
+**Reset Configuration:**
+```
+User: "I want to start over with my configuration"
+Claude: [calls resetJiraConfiguration with confirmation]
+Claude: "✅ Configuration reset. Let's set up your Jira connection again..."
+```
+
+### **Debug Mode:**
+Set `DEBUG=true` in your environment to see detailed logging.
+
+---
+
+## 🤝 **Contributing**
+
+We welcome contributions! This server demonstrates:
+- **Dynamic configuration patterns** for MCP servers
+- **Conversational setup** instead of traditional wizards
+- **Production-ready deployment** strategies
+- **Security best practices** for credential management
+
+### **Development:**
+```bash
+git clone https://github.com/techrivers/jiramcp.git
+cd jiramcp
+npm install
+npm run dev
+```
+
+### **Testing:**
+```bash
+npm test
+```
+
+---
+
+## 📄 **License**
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+---
+
+## 🎯 **Why This Architecture?**
+
+This server demonstrates a **dynamic configuration approach** that's perfect for complex, ongoing workflows:
+
+### **Traditional Setup vs. Dynamic Configuration:**
+
+| Traditional | Dynamic |
+|-------------|---------|
+| One-time setup wizard | Conversational configuration |
+| Static configuration | Runtime updates |
+| Manual credential management | Intelligent suggestions |
+| Restart required for changes | Hot configuration updates |
+| Error-prone initial setup | Guided, contextual help |
+
+### **Perfect for Jira Workflows:**
+- **Multi-project environments** - Switch between projects seamlessly
+- **Credential rotation** - Update API tokens without restart
+- **Team collaboration** - Share configuration patterns
+- **Development stages** - Switch between dev/staging/prod instances
+
+---
+
+**🚀 Ready to boost your Jira productivity? Add the server to Claude Desktop and start your conversational configuration journey!**

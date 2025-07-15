@@ -44,8 +44,8 @@ export async function sheetToJiraStoriesHandler(input: { fileBuffer?: Buffer; go
     }
 
     // Initialize field mapper for dynamic field discovery
-    const JIRA_BASE_URL = process.env.JIRA_BASE_URL;
-    const JIRA_USER_EMAIL = process.env.JIRA_USER_EMAIL;
+    const JIRA_BASE_URL = process.env.JIRA_URL;
+    const JIRA_USER_EMAIL = process.env.JIRA_USERNAME;
     const JIRA_API_TOKEN = process.env.JIRA_API_TOKEN;
 
     if (!JIRA_BASE_URL || !JIRA_USER_EMAIL || !JIRA_API_TOKEN) {

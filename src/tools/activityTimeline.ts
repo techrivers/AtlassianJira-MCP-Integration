@@ -1,9 +1,30 @@
+/**
+ * 🚫 DISABLED: Activity Timeline Tool
+ * 
+ * This tool requires the Activity Timeline plugin API which is not currently available.
+ * 
+ * TO RE-ENABLE:
+ * 1. Install and configure the Activity Timeline plugin in your Jira instance
+ * 2. Verify API endpoints are accessible at /rest/activitytimeline/1.0/
+ * 3. Uncomment the registerActivityTimelineTools(server) line in src/index.ts
+ * 4. Rebuild and restart the server
+ * 
+ * API Endpoints Used:
+ * - GET /rest/activitytimeline/1.0/timeline - Get timeline entries
+ * - POST /rest/activitytimeline/1.0/timeline/entry - Add time entry
+ * - PUT /rest/activitytimeline/1.0/timeline/entry/{id} - Update time entry
+ * - DELETE /rest/activitytimeline/1.0/timeline/entry/{id} - Delete time entry
+ * - GET /rest/activitytimeline/1.0/activities/types - Get activity types
+ * - GET /rest/activitytimeline/1.0/reports/time - Generate time reports
+ * - POST /rest/activitytimeline/1.0/timeline/bulk-import - Bulk import entries
+ */
+
 import { z } from "zod";
 import axios, { AxiosRequestConfig } from "axios";
 
-const AT_BASE_URL = process.env.JIRA_BASE_URL;
+const AT_BASE_URL = process.env.JIRA_URL;
 const AT_API_TOKEN = process.env.JIRA_API_TOKEN;
-const AT_USER_EMAIL = process.env.JIRA_USER_EMAIL;
+const AT_USER_EMAIL = process.env.JIRA_USERNAME;
 
 function getAuthConfig(): AxiosRequestConfig {
     if (!AT_BASE_URL || !AT_API_TOKEN || !AT_USER_EMAIL) {

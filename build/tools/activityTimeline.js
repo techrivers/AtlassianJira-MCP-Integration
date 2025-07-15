@@ -1,4 +1,24 @@
 "use strict";
+/**
+ * 🚫 DISABLED: Activity Timeline Tool
+ *
+ * This tool requires the Activity Timeline plugin API which is not currently available.
+ *
+ * TO RE-ENABLE:
+ * 1. Install and configure the Activity Timeline plugin in your Jira instance
+ * 2. Verify API endpoints are accessible at /rest/activitytimeline/1.0/
+ * 3. Uncomment the registerActivityTimelineTools(server) line in src/index.ts
+ * 4. Rebuild and restart the server
+ *
+ * API Endpoints Used:
+ * - GET /rest/activitytimeline/1.0/timeline - Get timeline entries
+ * - POST /rest/activitytimeline/1.0/timeline/entry - Add time entry
+ * - PUT /rest/activitytimeline/1.0/timeline/entry/{id} - Update time entry
+ * - DELETE /rest/activitytimeline/1.0/timeline/entry/{id} - Delete time entry
+ * - GET /rest/activitytimeline/1.0/activities/types - Get activity types
+ * - GET /rest/activitytimeline/1.0/reports/time - Generate time reports
+ * - POST /rest/activitytimeline/1.0/timeline/bulk-import - Bulk import entries
+ */
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -6,9 +26,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerActivityTimelineTools = registerActivityTimelineTools;
 const zod_1 = require("zod");
 const axios_1 = __importDefault(require("axios"));
-const AT_BASE_URL = process.env.JIRA_BASE_URL;
+const AT_BASE_URL = process.env.JIRA_URL;
 const AT_API_TOKEN = process.env.JIRA_API_TOKEN;
-const AT_USER_EMAIL = process.env.JIRA_USER_EMAIL;
+const AT_USER_EMAIL = process.env.JIRA_USERNAME;
 function getAuthConfig() {
     if (!AT_BASE_URL || !AT_API_TOKEN || !AT_USER_EMAIL) {
         throw new Error("Jira environment variables are not configured. Check your .env file.");

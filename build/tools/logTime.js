@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerLogTimeTool = registerLogTimeTool;
 const zod_1 = require("zod");
 const axios_1 = __importDefault(require("axios"));
+const configManager_1 = require("../utils/configManager");
 // --- Helper function for making Jira API requests ---
 async function makeJiraRequest(url, data, config) {
     try {
@@ -29,11 +30,12 @@ const logTimeSchema = zod_1.z.object({
 function registerLogTimeTool(server) {
     // @ts-expect-error: server.tool signature is not typed
     server.tool("logTime", "Logs a work entry to a specific Jira issue.", logTimeSchema.shape, async ({ issueKey, timeSpent, comment, started }) => {
-        const { JIRA_BASE_URL, JIRA_USER_EMAIL, JIRA_API_TOKEN } = process.env;
-        if (!JIRA_BASE_URL || !JIRA_USER_EMAIL || !JIRA_API_TOKEN) {
-            throw new Error("Jira environment variables are not configured. Check your .env file.");
+        const config = configManager_1.dynamicConfig.getConfig();
+        if (!configManager_1.dynamicConfig.isConfigured()) {
+            const missing = configManager_1.dynamicConfig.getMissingFields();
+            throw new Error(`❌ Jira configuration incomplete. Missing: ${missing.join(', ')}. Use the 'updateJiraConfiguration' tool to set up your Jira connection.`);
         }
-        const jiraUrl = `${JIRA_BASE_URL}/rest/api/3/issue/${issueKey}/worklog`;
+        const jiraUrl = `${config.url}/rest/api/3/issue/${issueKey}/worklog`;
         const requestBody = {
             timeSpent,
             ...(comment && {
@@ -47,15 +49,15 @@ function registerLogTimeTool(server) {
             }),
             ...(started && { started }),
         };
-        const authBuffer = Buffer.from(`${JIRA_USER_EMAIL}:${JIRA_API_TOKEN}`).toString("base64");
-        const config = {
+        const authBuffer = Buffer.from(`${config.username}:${config.apiToken}`).toString("base64");
+        const axiosConfig = {
             headers: {
                 Authorization: `Basic ${authBuffer}`,
                 Accept: "application/json",
                 "Content-Type": "application/json",
             },
         };
-        const jiraResponse = await makeJiraRequest(jiraUrl, requestBody, config);
+        const jiraResponse = await makeJiraRequest(jiraUrl, requestBody, axiosConfig);
         return {
             content: [
                 {

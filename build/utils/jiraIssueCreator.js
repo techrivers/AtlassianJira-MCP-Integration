@@ -11,8 +11,8 @@ const axios_1 = __importDefault(require("axios"));
 let fieldMapperCache = null;
 let fieldMappingCache = null;
 async function createJiraStory(row) {
-    const JIRA_BASE_URL = process.env.JIRA_BASE_URL;
-    const JIRA_USER_EMAIL = process.env.JIRA_USER_EMAIL;
+    const JIRA_BASE_URL = process.env.JIRA_URL;
+    const JIRA_USER_EMAIL = process.env.JIRA_USERNAME;
     const JIRA_API_TOKEN = process.env.JIRA_API_TOKEN;
     const JIRA_PROJECT_KEY = process.env.JIRA_PROJECT_KEY || 'PROJ';
     if (!JIRA_BASE_URL || !JIRA_USER_EMAIL || !JIRA_API_TOKEN) {
