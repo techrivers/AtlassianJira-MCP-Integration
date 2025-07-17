@@ -28,12 +28,8 @@ async function createJiraStory(row) {
         // Get field mapping for actual columns
         const initialMapping = await fieldMapperCache.mapSpreadsheetColumns(actualColumnNames);
         const validatedMapping = await fieldMapperCache.validateFieldPermissions(initialMapping, JIRA_PROJECT_KEY);
-        console.log('Row field mapping:', validatedMapping);
         // Build payload using validated field mapping
         const { payload, skippedFields } = await fieldMapperCache.buildJiraPayload(row, validatedMapping, JIRA_PROJECT_KEY);
-        if (skippedFields.length > 0) {
-            console.log(`Skipped fields for this story: ${skippedFields.join(', ')}`);
-        }
         // Handle acceptance criteria by appending to description
         if (row.acceptanceCriteria && payload.fields.description) {
             const currentDesc = payload.fields.description.content[0].content[0].text;

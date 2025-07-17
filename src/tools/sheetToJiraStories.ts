@@ -32,9 +32,17 @@ export async function sheetToJiraStoriesHandler(input: { fileBuffer?: Buffer; go
         const response = await fetch.default(csvUrl);
         if (!response.ok) throw new Error('Failed to fetch Google Sheet CSV');
         const csv = await response.text();
-        // Parse CSV without field normalization for dynamic mapping
+        // Parse CSV with robust handling of special characters and quotes
         const { parse } = await import('csv-parse/sync');
-        rows = parse(csv, { columns: true, skip_empty_lines: true });
+        rows = parse(csv, { 
+            columns: true, 
+            skip_empty_lines: true,
+            escape: '"',
+            quote: '"',
+            trim: true,
+            relax_quotes: true,
+            relax_column_count: true
+        });
     } else {
         throw new Error('No input file or Google Sheet link provided');
     }
@@ -56,21 +64,18 @@ export async function sheetToJiraStoriesHandler(input: { fileBuffer?: Buffer; go
     
     // Get actual column names from the spreadsheet
     const columnNames = Object.keys(rows[0]);
-    console.log('Discovered spreadsheet columns:', columnNames);
     
     // Map columns to Jira fields and validate permissions
     const initialMapping = await fieldMapper.mapSpreadsheetColumns(columnNames);
-    console.log('Initial field mapping:', initialMapping);
     
     const JIRA_PROJECT_KEY = process.env.JIRA_PROJECT_KEY || 'PROJ';
     const validatedMapping = await fieldMapper.validateFieldPermissions(initialMapping, JIRA_PROJECT_KEY);
-    console.log('Validated field mapping:', validatedMapping);
     
     // Report unmapped/unavailable columns
     const unmappedColumns = fieldMapper.getUnmappedColumns(validatedMapping);
-    if (unmappedColumns.length > 0) {
-        console.warn('Unavailable columns (will be skipped):', unmappedColumns);
-    }
+    
+    // Get available issue types for better error reporting
+    const availableIssueTypes = await fieldMapper.getAvailableIssueTypes(JIRA_PROJECT_KEY);
 
     // Create a simplified validator that checks for basic required fields
     const validRows: { row: any, originalIndex: number }[] = [];
@@ -109,12 +114,19 @@ export async function sheetToJiraStoriesHandler(input: { fileBuffer?: Buffer; go
 
     // Process valid rows and create Jira stories
     for (const { row, originalIndex } of validRows) {
-        const result = await createJiraStory(row);
-        if (result.success) {
-            created++;
-        } else {
+        try {
+            const { payload, skippedFields } = await fieldMapper.buildJiraPayload(row, validatedMapping, JIRA_PROJECT_KEY);
+            
+            const result = await createJiraStory(row);
+            if (result.success) {
+                created++;
+            } else {
+                failed++;
+                allErrors.push({ row: originalIndex, reason: result.error || 'Unknown error' });
+            }
+        } catch (error: any) {
             failed++;
-            allErrors.push({ row: originalIndex, reason: result.error || 'Unknown error' });
+            allErrors.push({ row: originalIndex, reason: error.message || 'Unknown error' });
         }
     }
 
@@ -140,30 +152,49 @@ export function registerSheetToJiraStoriesTool(server: McpServer) {
         "Creates Jira stories from a spreadsheet (Excel or Google Sheets link).",
         sheetToJiraStoriesSchema.shape,
         async (input: SheetToJiraStoriesInput) => {
-            // At least one input must be provided
-            if (!input.fileBuffer && !input.googleSheetLink) {
-                throw new Error("Either fileBuffer or googleSheetLink must be provided");
-            }
-            // Convert fileBuffer from base64 string to Buffer if present
-            let fileBuffer: Buffer | undefined = undefined;
-            if (input.fileBuffer) {
-                fileBuffer = Buffer.from(input.fileBuffer, 'base64');
-            }
-            const result = await sheetToJiraStoriesHandler({
-                fileBuffer,
-                googleSheetLink: input.googleSheetLink
-            });
-            // Wrap result for MCP/Claude compatibility
-            const stringifiedErrors = result.errors.map(e => JSON.stringify(e));
-            return {
-                content: [
-                    {
-                        type: "text",
-                        text: `Created: ${result.created}, Failed: ${result.failed}\nErrors: ${stringifiedErrors.join("; ")}`
+            try {
+                // At least one input must be provided
+                if (!input.fileBuffer && !input.googleSheetLink) {
+                    throw new Error("Either fileBuffer or googleSheetLink must be provided");
+                }
+                
+                // Convert fileBuffer from base64 string to Buffer if present
+                let fileBuffer: Buffer | undefined = undefined;
+                if (input.fileBuffer) {
+                    try {
+                        fileBuffer = Buffer.from(input.fileBuffer, 'base64');
+                    } catch (error) {
+                        throw new Error('Invalid base64 file buffer');
                     }
-                ],
-                metadata: result
-            };
+                }
+                
+                const result = await sheetToJiraStoriesHandler({
+                    fileBuffer,
+                    googleSheetLink: input.googleSheetLink
+                });
+                
+                // Wrap result for MCP/Claude compatibility
+                const stringifiedErrors = result.errors.map(e => JSON.stringify(e));
+                return {
+                    content: [
+                        {
+                            type: "text",
+                            text: `Created: ${result.created}, Failed: ${result.failed}\nErrors: ${stringifiedErrors.join("; ")}`
+                        }
+                    ],
+                    metadata: result
+                };
+            } catch (error: any) {
+                return {
+                    content: [
+                        {
+                            type: "text",
+                            text: `Error: ${error.message || 'Unknown error occurred'}`
+                        }
+                    ],
+                    metadata: { created: 0, failed: 0, errors: [{ error: error.message }] }
+                };
+            }
         }
     );
 } 
