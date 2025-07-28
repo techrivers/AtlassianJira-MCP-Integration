@@ -1,10 +1,12 @@
 # 🚀 Jira Activity Timeline MCP Server
 
-**Production-ready MCP server for Jira integration with dynamic configuration, time logging, task creation, and bulk imports.**
+**Production-ready MCP server for Jira integration with dynamic configuration, time logging, task creation, issue updates, and bulk imports.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/typescript-%5E5.0.0-blue)](https://www.typescriptlang.org/)
+
+---
 
 ## ✨ **Key Features**
 
@@ -17,6 +19,7 @@
 ### 🛠️ **Production Tools**
 - **📝 Time Logging** - Log work time to Jira issues with comments
 - **📋 Task Creation** - Create comprehensive Jira issues with custom fields
+- **✏️ Issue Updates** - Update existing issues, change status, modify fields  
 - **📊 Bulk Import** - Import multiple stories from spreadsheets
 - **⚙️ Configuration Management** - Dynamic Jira configuration tools
 
@@ -68,7 +71,28 @@ Claude will use the configuration tools to help you set up:
 Once configured, you can immediately:
 - Log time: *"Log 2 hours to PROJ-123 for backend development"*
 - Create tasks: *"Create a new story for user authentication"*
+- Update issues: *"Update PROJ-123 status to In Progress and assign to me"*
 - Import stories: *"Import these tasks from my spreadsheet"*
+
+---
+
+## 🛠️ **Available Tools**
+
+### **📝 Core Tools:**
+- **`logTime`** - Log work time to Jira issues with detailed comments
+- **`createTask`** - Create comprehensive Jira issues with custom fields
+- **`updateIssue`** - Update existing issues: fields, status, assignee, labels
+- **`sheetToJiraStories`** - Bulk import stories from Excel/CSV files
+
+### **⚙️ Configuration Tools:**
+- **`getJiraConfiguration`** - View current configuration status
+- **`updateJiraConfiguration`** - Update Jira connection settings
+- **`testJiraConnection`** - Test your Jira connection
+- **`resetJiraConfiguration`** - Reset all configuration
+- **`suggestJiraConfiguration`** - Get configuration suggestions
+
+### **🚫 Temporarily Disabled:**
+- **`getTimeline`** - Requires Activity Timeline plugin API (see [Re-enabling](#re-enabling-activity-timeline-tools))
 
 ---
 
@@ -100,40 +124,6 @@ Claude: "✅ Your Jira URL has been updated and tested successfully!"
 
 ---
 
-## 🛠️ **Available Tools**
-
-### **📝 Core Tools:**
-- **`logTime`** - Log work time to Jira issues with detailed comments
-- **`createTask`** - Create comprehensive Jira issues with custom fields
-- **`sheetToJiraStories`** - Bulk import stories from Excel/CSV files
-
-### **⚙️ Configuration Tools:**
-- **`getJiraConfiguration`** - View current configuration status
-- **`updateJiraConfiguration`** - Update Jira connection settings
-- **`testJiraConnection`** - Test your Jira connection
-- **`resetJiraConfiguration`** - Reset all configuration
-- **`suggestJiraConfiguration`** - Get configuration suggestions
-
-### **🚫 Temporarily Disabled:**
-- **`getTimeline`** - Requires Activity Timeline plugin API (see [Re-enabling](#re-enabling-activity-timeline-tools))
-
----
-
-## 🔐 **Security & Privacy**
-
-### **Configuration Security:**
-- ✅ **Local storage** - All configuration stored locally on your machine
-- ✅ **Masked sensitive data** - API tokens never displayed in full
-- ✅ **No cloud storage** - Configuration never sent to external servers
-- ✅ **Secure transmission** - HTTPS-only communication with Jira
-
-### **API Token Setup:**
-1. Visit [Atlassian API Tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
-2. Create a new token with appropriate permissions
-3. Use the token in your configuration (stored securely locally)
-
----
-
 ## 📊 **Usage Examples**
 
 ### **Initial Setup:**
@@ -159,6 +149,13 @@ Claude: [calls createTask]
 Claude: "✅ Created story PROJ-124: User Dashboard Implementation (High priority)"
 ```
 
+### **Issue Updates:**
+```
+User: "Update PROJ-123 to In Progress status and assign to john@company.com"
+Claude: [calls updateIssue]
+Claude: "✅ Updated PROJ-123: status → In Progress, assignee → john@company.com"
+```
+
 ### **Configuration Updates:**
 ```
 User: "I need to switch to a different Jira instance"
@@ -166,22 +163,6 @@ Claude: [calls updateJiraConfiguration with new URL]
 Claude: [calls testJiraConnection]
 Claude: "✅ Successfully updated to new Jira instance and verified connection."
 ```
-
----
-
-## 🔄 **Re-enabling Activity Timeline Tools**
-
-The Activity Timeline tools are disabled because they require the Activity Timeline plugin API. To re-enable:
-
-1. **Install Activity Timeline Plugin** in your Jira instance
-2. **Verify API Access** - Check that `/rest/activitytimeline/1.0/` endpoints are available
-3. **Contact Support** - Request re-enabling of timeline tools
-4. **Tools Available After Re-enabling:**
-   - `getTimeline` - Retrieve activity timeline data
-   - `addTimeEntry` - Add time entries to timeline
-   - `updateTimeEntry` - Update existing time entries
-   - `deleteTimeEntry` - Remove time entries
-   - `getTimeReport` - Generate timeline reports
 
 ---
 
@@ -234,6 +215,37 @@ npm install -g github:techrivers/jiramcp
   }
 }
 ```
+
+---
+
+## 🔐 **Security & Privacy**
+
+### **Configuration Security:**
+- ✅ **Local storage** - All configuration stored locally on your machine
+- ✅ **Masked sensitive data** - API tokens never displayed in full
+- ✅ **No cloud storage** - Configuration never sent to external servers
+- ✅ **Secure transmission** - HTTPS-only communication with Jira
+
+### **API Token Setup:**
+1. Visit [Atlassian API Tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
+2. Create a new token with appropriate permissions
+3. Use the token in your configuration (stored securely locally)
+
+---
+
+## 🔄 **Re-enabling Activity Timeline Tools**
+
+The Activity Timeline tools are disabled because they require the Activity Timeline plugin API. To re-enable:
+
+1. **Install Activity Timeline Plugin** in your Jira instance
+2. **Verify API Access** - Check that `/rest/activitytimeline/1.0/` endpoints are available
+3. **Contact Support** - Request re-enabling of timeline tools
+4. **Tools Available After Re-enabling:**
+   - `getTimeline` - Retrieve activity timeline data
+   - `addTimeEntry` - Add time entries to timeline
+   - `updateTimeEntry` - Update existing time entries
+   - `deleteTimeEntry` - Remove time entries
+   - `getTimeReport` - Generate timeline reports
 
 ---
 
@@ -294,6 +306,50 @@ Set `DEBUG=true` in your environment to see detailed logging.
 
 ---
 
+## 🏗️ **Development**
+
+### **Project Structure:**
+```
+src/
+├── index.ts                    # Main MCP server entry point
+├── tools/                      # MCP tool implementations
+│   ├── configurationTools.ts   # Dynamic configuration tools
+│   ├── createTask.ts           # Task creation
+│   ├── updateIssue.ts          # Issue updates (NEW)
+│   ├── logTime.ts              # Time logging
+│   ├── sheetToJiraStories.ts   # Bulk import
+│   └── activityTimeline.ts     # Timeline tools (disabled)
+└── utils/                      # Shared utilities
+    ├── configManager.ts        # Dynamic configuration system
+    ├── jiraFieldMapper.ts      # Field mapping and validation
+    ├── jiraIssueCreator.ts     # Jira API helpers
+    └── types.ts                # TypeScript definitions
+```
+
+### **Local Development:**
+```bash
+git clone https://github.com/techrivers/jiramcp.git
+cd jiramcp
+npm install
+npm run dev
+```
+
+### **Building:**
+```bash
+npm run build
+```
+
+### **Testing:**
+```bash
+# Test with --help
+node build/index.js --help
+
+# Test with --version  
+node build/index.js --version
+```
+
+---
+
 ## 🤝 **Contributing**
 
 We welcome contributions! This server demonstrates:
@@ -302,18 +358,22 @@ We welcome contributions! This server demonstrates:
 - **Production-ready deployment** strategies
 - **Security best practices** for credential management
 
-### **Development:**
-```bash
-git clone https://github.com/techrivers/jiramcp.git
-cd jiramcp
-npm install
-npm run dev
-```
+### **Development Process:**
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes following existing patterns
+4. Add TypeScript types and JSDoc comments
+5. Test your changes (`npm run build && npm run dev`)
+6. Commit changes (`git commit -m 'feat: add amazing feature'`)
+7. Push to branch (`git push origin feature/amazing-feature`)
+8. Open a Pull Request
 
-### **Testing:**
-```bash
-npm test
-```
+### **Code Style:**
+- Use TypeScript for all new code
+- Follow existing naming conventions
+- Add JSDoc comments for public functions
+- Keep functions small and focused
+- Include comprehensive error handling
 
 ---
 

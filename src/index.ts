@@ -6,6 +6,7 @@ import path from "path";
 import fs from "fs";
 import { registerLogTimeTool } from "./tools/logTime";
 import { registerCreateTaskTool } from "./tools/createTask";
+import { registerUpdateIssueTool } from "./tools/updateIssue";
 import { registerActivityTimelineTools } from "./tools/activityTimeline";
 import { registerSheetToJiraStoriesTool } from "./tools/sheetToJiraStories";
 import { registerConfigurationTools } from "./tools/configurationTools";
@@ -73,6 +74,7 @@ const server = new McpServer({
 registerConfigurationTools(server);
 registerLogTimeTool(server);
 registerCreateTaskTool(server);
+registerUpdateIssueTool(server);
 // registerActivityTimelineTools(server); // DISABLED: Requires Activity Timeline plugin API access
 registerSheetToJiraStoriesTool(server);
 

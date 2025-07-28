@@ -1,15 +1,16 @@
 {
-  "name": "jira-activitytimeline-server",
+  "name": "@techrivers/jira-activitytimeline-server",
   "version": "1.0.0",
   "description": "Production-ready MCP server for Jira integration with dynamic configuration, time logging, task creation, and bulk imports",
   "main": "build/index.js",
   "type": "commonjs",
   "bin": {
-    "jira-activitytimeline-server": "./build/index.js"
+    "jira-activitytimeline-server": "./build/index.js",
+    "jira-mcp": "./build/index.js"
   },
   "files": [
     "build/",
-    "src/",
+    "scripts/",
     "README.md",
     "LICENSE",
     "package.json",
@@ -42,6 +43,7 @@
     "start": "npm run build && node build/index.js",
     "build": "tsc",
     "dev": "tsx src/index.ts",
+    "setup": "node scripts/setup.js --setup",
     "postinstall": "npm run build",
     "prepublishOnly": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"

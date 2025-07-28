@@ -11,6 +11,7 @@ const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const logTime_1 = require("./tools/logTime");
 const createTask_1 = require("./tools/createTask");
+const updateIssue_1 = require("./tools/updateIssue");
 const sheetToJiraStories_1 = require("./tools/sheetToJiraStories");
 const configurationTools_1 = require("./tools/configurationTools");
 // Handle CLI arguments
@@ -71,6 +72,7 @@ const server = new mcp_js_1.McpServer({
 (0, configurationTools_1.registerConfigurationTools)(server);
 (0, logTime_1.registerLogTimeTool)(server);
 (0, createTask_1.registerCreateTaskTool)(server);
+(0, updateIssue_1.registerUpdateIssueTool)(server);
 // registerActivityTimelineTools(server); // DISABLED: Requires Activity Timeline plugin API access
 (0, sheetToJiraStories_1.registerSheetToJiraStoriesTool)(server);
 async function main() {
