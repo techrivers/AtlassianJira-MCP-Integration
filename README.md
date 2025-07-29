@@ -82,7 +82,8 @@ Once configured, you can immediately:
 - **`logTime`** - Log work time to Jira issues with detailed comments
 - **`createTask`** - Create comprehensive Jira issues with custom fields
 - **`updateIssue`** - Update existing issues: fields, status, assignee, labels
-- **`sheetToJiraStories`** - Bulk import stories from Excel/CSV files
+- **`sheetToJiraStories`** - Bulk import stories from Excel/CSV files (Enhanced with file upload support)
+- **`meetingNotesToJira`** - Parse meeting notes and create Jira issues from action items
 
 ### **⚙️ Configuration Tools:**
 - **`getJiraConfiguration`** - View current configuration status
@@ -154,6 +155,20 @@ Claude: "✅ Created story PROJ-124: User Dashboard Implementation (High priorit
 User: "Update PROJ-123 to In Progress status and assign to john@company.com"
 Claude: [calls updateIssue]
 Claude: "✅ Updated PROJ-123: status → In Progress, assignee → john@company.com"
+```
+
+### **Bulk Import from Spreadsheets:**
+```
+User: "Import these tasks from my Excel file"
+Claude: [calls sheetToJiraStories]
+Claude: "✅ Successfully imported 5 stories from your spreadsheet: PROJ-125, PROJ-126, PROJ-127, PROJ-128, PROJ-129"
+```
+
+### **Meeting Notes Processing:**
+```
+User: "Parse this meeting note and create action items"
+Claude: [calls meetingNotesToJira]
+Claude: "✅ Found 3 actionable items and created: PROJ-130 (Review API), PROJ-131 (Fix login bug), PROJ-132 (Update docs)"
 ```
 
 ### **Configuration Updates:**
@@ -315,9 +330,10 @@ src/
 ├── tools/                      # MCP tool implementations
 │   ├── configurationTools.ts   # Dynamic configuration tools
 │   ├── createTask.ts           # Task creation
-│   ├── updateIssue.ts          # Issue updates (NEW)
+│   ├── updateIssue.ts          # Issue updates
 │   ├── logTime.ts              # Time logging
-│   ├── sheetToJiraStories.ts   # Bulk import
+│   ├── sheetToJiraStories.ts   # Enhanced bulk import with file upload
+│   ├── meetingNotesToJira.ts   # Meeting notes parser with action detection
 │   └── activityTimeline.ts     # Timeline tools (disabled)
 └── utils/                      # Shared utilities
     ├── configManager.ts        # Dynamic configuration system

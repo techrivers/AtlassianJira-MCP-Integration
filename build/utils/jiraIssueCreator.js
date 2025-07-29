@@ -6,38 +6,37 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createJiraStory = createJiraStory;
 exports.resetFieldMappingCache = resetFieldMappingCache;
 const jiraFieldMapper_1 = require("./jiraFieldMapper");
+const configManager_1 = require("./configManager");
 const axios_1 = __importDefault(require("axios"));
 // Cache for field mapper to avoid repeated API calls
 let fieldMapperCache = null;
 let fieldMappingCache = null;
 async function createJiraStory(row) {
-    const JIRA_BASE_URL = process.env.JIRA_URL;
-    const JIRA_USER_EMAIL = process.env.JIRA_USERNAME;
-    const JIRA_API_TOKEN = process.env.JIRA_API_TOKEN;
-    const JIRA_PROJECT_KEY = process.env.JIRA_PROJECT_KEY || 'PROJ';
-    if (!JIRA_BASE_URL || !JIRA_USER_EMAIL || !JIRA_API_TOKEN) {
-        throw new Error('Jira environment variables are not configured. Check your .env file.');
+    const config = configManager_1.dynamicConfig.getConfig();
+    if (!configManager_1.dynamicConfig.isConfigured()) {
+        const missing = configManager_1.dynamicConfig.getMissingFields();
+        throw new Error(`❌ Jira configuration incomplete. Missing: ${missing.join(', ')}. Use the 'updateJiraConfiguration' tool to set up your Jira connection.`);
     }
     try {
         // Initialize field mapper if not cached
         if (!fieldMapperCache) {
-            fieldMapperCache = new jiraFieldMapper_1.JiraFieldMapper(JIRA_BASE_URL, JIRA_USER_EMAIL, JIRA_API_TOKEN);
+            fieldMapperCache = new jiraFieldMapper_1.JiraFieldMapper(config.url, config.username, config.apiToken);
         }
         // Get column names from the actual row data
         const actualColumnNames = Object.keys(row);
         // Get field mapping for actual columns
         const initialMapping = await fieldMapperCache.mapSpreadsheetColumns(actualColumnNames);
-        const validatedMapping = await fieldMapperCache.validateFieldPermissions(initialMapping, JIRA_PROJECT_KEY);
+        const validatedMapping = await fieldMapperCache.validateFieldPermissions(initialMapping, config.projectKey || 'PROJ');
         // Build payload using validated field mapping
-        const { payload, skippedFields } = await fieldMapperCache.buildJiraPayload(row, validatedMapping, JIRA_PROJECT_KEY);
+        const { payload, skippedFields } = await fieldMapperCache.buildJiraPayload(row, validatedMapping, config.projectKey || 'PROJ');
         // Handle acceptance criteria by appending to description
         if (row.acceptanceCriteria && payload.fields.description) {
             const currentDesc = payload.fields.description.content[0].content[0].text;
             payload.fields.description.content[0].content[0].text =
                 `${currentDesc}\n\nAcceptance Criteria:\n${row.acceptanceCriteria}`;
         }
-        const authBuffer = Buffer.from(`${JIRA_USER_EMAIL}:${JIRA_API_TOKEN}`).toString('base64');
-        const response = await axios_1.default.post(`${JIRA_BASE_URL}/rest/api/3/issue`, payload, {
+        const authBuffer = Buffer.from(`${config.username}:${config.apiToken}`).toString('base64');
+        const response = await axios_1.default.post(`${config.url}/rest/api/3/issue`, payload, {
             headers: {
                 Authorization: `Basic ${authBuffer}`,
                 Accept: 'application/json',

@@ -14,6 +14,7 @@ const createTask_1 = require("./tools/createTask");
 const updateIssue_1 = require("./tools/updateIssue");
 const sheetToJiraStories_1 = require("./tools/sheetToJiraStories");
 const configurationTools_1 = require("./tools/configurationTools");
+const meetingNotesToJira_1 = require("./tools/meetingNotesToJira");
 // Handle CLI arguments
 const args = process.argv.slice(2);
 if (args.includes('--version')) {
@@ -75,6 +76,7 @@ const server = new mcp_js_1.McpServer({
 (0, updateIssue_1.registerUpdateIssueTool)(server);
 // registerActivityTimelineTools(server); // DISABLED: Requires Activity Timeline plugin API access
 (0, sheetToJiraStories_1.registerSheetToJiraStoriesTool)(server);
+(0, meetingNotesToJira_1.registerMeetingNotesToJiraTool)(server);
 async function main() {
     const transport = new stdio_js_1.StdioServerTransport();
     await server.connect(transport);

@@ -10,6 +10,7 @@ import { registerUpdateIssueTool } from "./tools/updateIssue";
 import { registerActivityTimelineTools } from "./tools/activityTimeline";
 import { registerSheetToJiraStoriesTool } from "./tools/sheetToJiraStories";
 import { registerConfigurationTools } from "./tools/configurationTools";
+import { registerMeetingNotesToJiraTool } from "./tools/meetingNotesToJira";
 
 // Handle CLI arguments
 const args = process.argv.slice(2);
@@ -77,6 +78,7 @@ registerCreateTaskTool(server);
 registerUpdateIssueTool(server);
 // registerActivityTimelineTools(server); // DISABLED: Requires Activity Timeline plugin API access
 registerSheetToJiraStoriesTool(server);
+registerMeetingNotesToJiraTool(server);
 
 async function main() {
     const transport = new StdioServerTransport();
