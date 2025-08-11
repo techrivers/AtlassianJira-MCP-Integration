@@ -1,4 +1,56 @@
 #!/usr/bin/env node
+
+// Node.js version compatibility check
+const requiredNodeVersion = '18.0.0';
+const currentVersion = process.version.substring(1); // Remove 'v' prefix
+
+function compareVersions(version1: string, version2: string): number {
+    const v1Parts = version1.split('.').map(Number);
+    const v2Parts = version2.split('.').map(Number);
+    
+    for (let i = 0; i < Math.max(v1Parts.length, v2Parts.length); i++) {
+        const v1Part = v1Parts[i] || 0;
+        const v2Part = v2Parts[i] || 0;
+        
+        if (v1Part > v2Part) return 1;
+        if (v1Part < v2Part) return -1;
+    }
+    return 0;
+}
+
+if (compareVersions(currentVersion, requiredNodeVersion) < 0) {
+    console.error(`
+❌ Node.js Version Incompatibility Error
+
+Current Node.js version: v${currentVersion}
+Required Node.js version: >=${requiredNodeVersion}
+
+The AtlassianJira MCP Integration server requires Node.js v${requiredNodeVersion} or higher.
+
+🔧 How to fix this:
+
+1. Update Node.js:
+   • Visit: https://nodejs.org/
+   • Download and install Node.js v20+ (LTS recommended)
+
+2. If using a version manager (nvm):
+   • Run: nvm install 20 && nvm use 20
+
+3. Clear npx cache and retry:
+   • Run: npx clear-npx-cache
+   • Then: npx -y github:techrivers/AtlassianJira-MCP-Integration
+
+4. For Claude Desktop, ensure it uses the updated Node.js version:
+   • Restart Claude Desktop completely after updating Node.js
+   • Or specify the full Node.js path in your configuration
+
+For more help, see: https://github.com/techrivers/AtlassianJira-MCP-Integration
+`);
+    process.exit(1);
+}
+
+console.error(`✅ Node.js compatibility check passed (v${currentVersion})`);
+
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import dotenv from "dotenv";
