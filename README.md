@@ -1,4 +1,4 @@
-# 🚀 Jira Activity Timeline MCP Server
+# 🚀 AtlassianJira MCP Integration Server
 
 **Production-ready MCP server for Jira integration with dynamic configuration, time logging, task creation, issue updates, and bulk imports.**
 
@@ -45,7 +45,7 @@ Edit your Claude Desktop config file:
   "mcpServers": {
     "jira-activitytimeline": {
       "command": "npx",
-      "args": ["-y", "github:techrivers/jiramcp"]
+      "args": ["-y", "github:techrivers/AtlassianJira-MCP-Integration"]
     }
   }
 }
@@ -189,7 +189,7 @@ Claude: "✅ Successfully updated to new Jira instance and verified connection."
   "mcpServers": {
     "jira-activitytimeline": {
       "command": "npx",
-      "args": ["-y", "github:techrivers/jiramcp"]
+      "args": ["-y", "github:techrivers/AtlassianJira-MCP-Integration"]
     }
   }
 }
@@ -218,7 +218,7 @@ npm run build
 
 ### **Option 3: Global Installation**
 ```bash
-npm install -g github:techrivers/jiramcp
+npm install -g github:techrivers/AtlassianJira-MCP-Integration
 ```
 
 ```json

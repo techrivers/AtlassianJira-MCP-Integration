@@ -1,12 +1,12 @@
 {
-  "name": "@techrivers/jira-activitytimeline-server",
+  "name": "@techrivers/atlassianjira-mcp-integration",
   "version": "1.0.0",
   "description": "Production-ready MCP server for Jira integration with dynamic configuration, time logging, task creation, and bulk imports",
   "main": "build/index.js",
   "type": "commonjs",
   "bin": {
-    "jira-activitytimeline-server": "./build/index.js",
-    "jira-mcp": "./build/index.js"
+    "atlassianjira-mcp-integration": "./build/index.js",
+    "jira-activitytimeline-server": "./build/index.js"
   },
   "files": [
     "build/",
@@ -31,12 +31,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/techrivers/jiramcp.git"
+    "url": "https://github.com/techrivers/AtlassianJira-MCP-Integration.git"
   },
   "bugs": {
-    "url": "https://github.com/techrivers/jiramcp/issues"
+    "url": "https://github.com/techrivers/AtlassianJira-MCP-Integration/issues"
   },
-  "homepage": "https://github.com/techrivers/jiramcp#readme",
+  "homepage": "https://github.com/techrivers/AtlassianJira-MCP-Integration#readme",
   "author": "Uzair Fayyaz <uzairfayyaz@gmail.com>",
   "license": "MIT",
   "scripts": {
