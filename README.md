@@ -3,7 +3,7 @@
 **Production-ready MCP server for Jira integration with dynamic configuration, time logging, task creation, issue updates, and bulk imports.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/typescript-%5E5.0.0-blue)](https://www.typescriptlang.org/)
 
 ---
@@ -297,7 +297,7 @@ Claude: "✅ Switched to staging environment. Ready to work with staging Jira."
 ```
 ❌ Node.js Version Incompatibility Error
 Current Node.js version: v16.13.0
-Required Node.js version: >=18.0.0
+Required Node.js version: >=20.0.0
 ```
 
 **Solutions:**

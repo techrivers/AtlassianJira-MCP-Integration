@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Node.js version compatibility check
-const requiredNodeVersion = '18.0.0';
+const requiredNodeVersion = '20.0.0';
 const currentVersion = process.version.substring(1); // Remove 'v' prefix
 function compareVersions(version1, version2) {
     const v1Parts = version1.split('.').map(Number);
