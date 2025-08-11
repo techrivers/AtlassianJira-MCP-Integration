@@ -3,7 +3,7 @@
 **Production-ready MCP server for Jira integration with dynamic configuration, time logging, task creation, issue updates, and bulk imports.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)](https://nodejs.org/)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/typescript-%5E5.0.0-blue)](https://www.typescriptlang.org/)
 
 ---
@@ -292,6 +292,31 @@ Claude: "✅ Switched to staging environment. Ready to work with staging Jira."
 ## 📈 **Troubleshooting**
 
 ### **Common Issues:**
+
+**Node.js Version Incompatibility:**
+```
+❌ Node.js Version Incompatibility Error
+Current Node.js version: v16.13.0
+Required Node.js version: >=20.0.0
+```
+
+**Solutions:**
+1. **Update Node.js**: Visit [nodejs.org](https://nodejs.org/) and install v20+ (LTS)
+2. **Clear NPX cache**: `npx clear-npx-cache`
+3. **Restart Claude Desktop** completely after updating Node.js
+4. **Use explicit Node.js path** in Claude Desktop config:
+   ```json
+   {
+     "mcpServers": {
+       "jira-activitytimeline": {
+         "command": "/usr/local/bin/node",
+         "args": ["/usr/local/bin/npx", "-y", "github:techrivers/AtlassianJira-MCP-Integration"]
+       }
+     }
+   }
+   ```
+
+📋 **See [CLAUDE_DESKTOP_SETUP.md](CLAUDE_DESKTOP_SETUP.md) for detailed setup instructions.**
 
 **Connection Failed:**
 ```
