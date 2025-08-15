@@ -41,7 +41,7 @@ async function makeJiraRequest<T>(url: string, data: any, config: AxiosRequestCo
             error.message ||
             "An unknown error occurred.";
         console.error("Error making Jira request:", errorMessage);
-        console.error("Full error response:", JSON.stringify(error.response?.data, null, 2));
+        if (process.env.DEBUG) console.error("Full error response:", JSON.stringify(error.response?.data, null, 2));
         throw new Error(`Failed to update issue: ${errorMessage}`);
     }
 }
@@ -117,6 +117,7 @@ export function registerUpdateIssueTool(server: unknown) {
                     Accept: "application/json",
                     "Content-Type": "application/json",
                 },
+                timeout: 15000,
             };
 
             let updatedFields: string[] = [];

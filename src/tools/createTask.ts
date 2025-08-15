@@ -95,7 +95,7 @@ export function registerCreateTaskTool(server: unknown) {
             const initialMapping = await fieldMapper.mapSpreadsheetColumns(columnNames);
             const validatedMapping = await fieldMapper.validateFieldPermissions(initialMapping, project, issueType);
 
-            console.error('createTask field mapping:', validatedMapping);
+            if (process.env.DEBUG) console.error('createTask field mapping:', validatedMapping);
 
             // Build payload using dynamic field mapping
             const { payload, skippedFields } = await fieldMapper.buildJiraPayload(mockRow, validatedMapping, project);
@@ -112,9 +112,10 @@ export function registerCreateTaskTool(server: unknown) {
                     Accept: "application/json",
                     "Content-Type": "application/json",
                 },
+                timeout: 15000,
             };
 
-            console.error('createTask payload:', JSON.stringify(payload, null, 2));
+            if (process.env.DEBUG) console.error('createTask payload:', JSON.stringify(payload, null, 2));
             const jiraResponse = await makeJiraRequest<JiraIssueResponse>(jiraUrl, payload, axiosConfig);
 
             const appliedFields = Object.keys(validatedMapping).filter(key => validatedMapping[key] !== null);

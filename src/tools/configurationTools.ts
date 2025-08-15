@@ -27,7 +27,7 @@ async function getJiraConfiguration({}: GetJiraConfigurationInput) {
 
 // --- Tool: updateJiraConfiguration ---
 const updateJiraConfigurationSchema = z.object({
-    url: z.string().url().optional(),
+    url: z.string().url().refine(v => v.startsWith('https://'), 'Only https:// URLs are allowed for Jira').optional(),
     username: z.string().email().optional(),
     apiToken: z.string().optional(),
     projectKey: z.string().optional(),
