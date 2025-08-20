@@ -56,6 +56,7 @@ function registerLogTimeTool(server) {
                 Accept: "application/json",
                 "Content-Type": "application/json",
             },
+            timeout: 10000,
         };
         const jiraResponse = await makeJiraRequest(jiraUrl, requestBody, axiosConfig);
         return {

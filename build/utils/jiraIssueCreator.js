@@ -41,7 +41,8 @@ async function createJiraStory(row) {
                 Authorization: `Basic ${authBuffer}`,
                 Accept: 'application/json',
                 'Content-Type': 'application/json'
-            }
+            },
+            timeout: 15000
         });
         if (response.status === 201) {
             return { success: true };
