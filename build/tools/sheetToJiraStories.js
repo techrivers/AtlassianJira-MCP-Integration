@@ -125,16 +125,15 @@ async function parseGoogleSheetFromUrl(url) {
             }
         }
         console.error(`Fetching Google Sheet: ${csvUrl}`);
-        const fetch = (await import('node-fetch')).default;
-        // Use AbortController for timeout implementation
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-        const response = await fetch(csvUrl, { signal: controller.signal });
-        clearTimeout(timeoutId); // Clear timeout once fetch completes
-        if (!response.ok) {
+        // Use axios for Node.js 16+ compatibility
+        const response = await axios_1.default.get(csvUrl, {
+            timeout: 10000, // 10 second timeout
+            responseType: 'text'
+        });
+        if (response.status !== 200) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}. Make sure the Google Sheet is publicly accessible.`);
         }
-        const csv = await response.text();
+        const csv = response.data;
         const records = (0, sync_1.parse)(csv, {
             columns: true,
             skip_empty_lines: true,

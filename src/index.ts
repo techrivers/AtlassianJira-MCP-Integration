@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Node.js version compatibility check
-const requiredNodeVersion = '20.0.0';
+const requiredNodeVersion = '16.0.0';
 const currentVersion = process.version.substring(1); // Remove 'v' prefix
 
 function compareVersions(version1: string, version2: string): number {
@@ -83,20 +83,19 @@ if (args.includes('--version')) {
 }
 
 if (args.includes('--configure')) {
-    // Launch secure CLI configuration tool
+    // Launch secure CLI configuration tool - run directly
     console.error('🔐 Starting Secure Jira Configuration Tool...\n');
     
-    import('./cli/secureConfigure.js').then(async ({ runSecureCLIConfiguration }) => {
-        const success = await runSecureCLIConfiguration();
-        console.error(success ? '\n✅ Configuration completed successfully!' : '\n❌ Configuration failed or was cancelled.');
-        process.exit(success ? 0 : 1);
-    }).catch((error) => {
-        console.error('❌ Failed to start secure configuration:', error);
-        process.exit(1);
-    });
-    
-    // Don't continue with normal execution - exit early
-    process.exit(0);
+    const { runSecureCLIConfiguration } = require('./cli/secureConfigure.js');
+    runSecureCLIConfiguration()
+        .then((success: boolean) => {
+            console.error(success ? '\n✅ Configuration completed successfully!' : '\n❌ Configuration failed or was cancelled.');
+            process.exit(success ? 0 : 1);
+        })
+        .catch((error: any) => {
+            console.error('❌ Failed to start secure configuration:', error);
+            process.exit(1);
+        });
 }
 
 if (args.includes('--help')) {

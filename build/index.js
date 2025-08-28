@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // Node.js version compatibility check
-const requiredNodeVersion = '20.0.0';
+const requiredNodeVersion = '16.0.0';
 const currentVersion = process.version.substring(1); // Remove 'v' prefix
 function compareVersions(version1, version2) {
     const v1Parts = version1.split('.').map(Number);
@@ -80,18 +80,18 @@ if (args.includes('--version')) {
     process.exit(0);
 }
 if (args.includes('--configure')) {
-    // Launch secure CLI configuration tool
+    // Launch secure CLI configuration tool - run directly
     console.error('🔐 Starting Secure Jira Configuration Tool...\n');
-    import('./cli/secureConfigure.js').then(async ({ runSecureCLIConfiguration }) => {
-        const success = await runSecureCLIConfiguration();
+    const { runSecureCLIConfiguration } = require('./cli/secureConfigure.js');
+    runSecureCLIConfiguration()
+        .then((success) => {
         console.error(success ? '\n✅ Configuration completed successfully!' : '\n❌ Configuration failed or was cancelled.');
         process.exit(success ? 0 : 1);
-    }).catch((error) => {
+    })
+        .catch((error) => {
         console.error('❌ Failed to start secure configuration:', error);
         process.exit(1);
     });
-    // Don't continue with normal execution - exit early
-    process.exit(0);
 }
 if (args.includes('--help')) {
     // Check for specific help topics
