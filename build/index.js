@@ -70,6 +70,7 @@ const configurationTools_1 = require("./tools/configurationTools");
 const meetingNotesToJira_1 = require("./tools/meetingNotesToJira");
 const setupUtilities_1 = require("./utils/setupUtilities");
 const credentialLoader_1 = require("./utils/credentialLoader");
+const helpSystem_1 = require("./cli/helpSystem");
 // Handle CLI arguments
 const args = process.argv.slice(2);
 if (args.includes('--version')) {
@@ -93,6 +94,20 @@ if (args.includes('--configure')) {
     process.exit(0);
 }
 if (args.includes('--help')) {
+    // Check for specific help topics
+    if (args.includes('--security')) {
+        (0, helpSystem_1.showSecurityDetailsHelp)();
+        process.exit(0);
+    }
+    if (args.includes('--troubleshoot')) {
+        (0, helpSystem_1.showTroubleshootingHelp)();
+        process.exit(0);
+    }
+    if (args.includes('--mcp')) {
+        (0, helpSystem_1.showMCPConfigurationExample)();
+        process.exit(0);
+    }
+    // Default help
     console.log(`
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                   AtlassianJira MCP Integration Server                     │

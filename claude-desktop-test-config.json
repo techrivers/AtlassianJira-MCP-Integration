@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "jira": {
+      "command": "node",
+      "args": ["/Users/uzairfayyaz/Projects/internal/mcp-server/jira-activitytimeline-server/build/index.js"],
+      "cwd": "/Users/uzairfayyaz/Projects/internal/mcp-server/jira-activitytimeline-server",
+      "env": {
+        "MCP_MODE": "true"
+      }
+    }
+  }
+}
