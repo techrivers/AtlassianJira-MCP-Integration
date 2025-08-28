@@ -45,7 +45,8 @@ export async function createJiraStory(row: UserStoryRow): Promise<{ success: boo
                     Authorization: `Basic ${authBuffer}`,
                     Accept: 'application/json',
                     'Content-Type': 'application/json'
-                }
+                },
+                timeout: 15000
             }
         );
         

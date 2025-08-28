@@ -23,7 +23,8 @@ class JiraFieldMapper {
                 Authorization: `Basic ${authBuffer}`,
                 Accept: 'application/json',
                 'Content-Type': 'application/json'
-            }
+            },
+            timeout: 10000
         };
     }
     async discoverFields() {

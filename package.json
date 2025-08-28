@@ -5,8 +5,8 @@
   "main": "build/index.js",
   "type": "commonjs",
   "bin": {
-    "atlassianjira-mcp-integration": "./build/index.js",
-    "jira-activitytimeline-server": "./build/index.js"
+    "atlassianjira-mcp-integration": "build/index.js",
+    "jira-activitytimeline-server": "build/index.js"
   },
   "files": [
     "build/",
@@ -31,7 +31,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/techrivers/AtlassianJira-MCP-Integration.git"
+    "url": "git+https://github.com/techrivers/AtlassianJira-MCP-Integration.git"
   },
   "bugs": {
     "url": "https://github.com/techrivers/AtlassianJira-MCP-Integration/issues"
@@ -44,6 +44,7 @@
     "build": "tsc",
     "dev": "tsx src/index.ts",
     "setup": "node scripts/setup.js --setup",
+    "configure": "npm run build && node build/index.js --configure",
     "postinstall": "npm run build",
     "prepublishOnly": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -52,10 +53,13 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.13.2",
+    "@modelcontextprotocol/sdk": "^1.17.3",
+    "@types/express": "^5.0.3",
     "axios": "^1.10.0",
     "csv-parse": "^5.6.0",
     "dotenv": "^16.4.5",
+    "express": "^5.1.0",
+    "node-fetch": "^3.3.2",
     "xlsx": "^0.18.5",
     "zod": "^3.25.67"
   },

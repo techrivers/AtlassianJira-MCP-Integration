@@ -10,6 +10,7 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const os_1 = __importDefault(require("os"));
 const util_1 = require("util");
+const credentialLoader_1 = require("./credentialLoader");
 const sleep = (0, util_1.promisify)(setTimeout);
 class AutoSetupManager {
     config;
@@ -24,9 +25,18 @@ class AutoSetupManager {
         };
     }
     /**
-     * Check if configuration file exists
+     * Check if configuration file exists or environment variables are set
      */
     hasConfiguration() {
+        // Check environment variables first (MCP mode)
+        if (process.env.JIRA_URL && process.env.JIRA_USERNAME && process.env.JIRA_API_TOKEN) {
+            return true;
+        }
+        // Check for secure credential storage
+        if ((0, credentialLoader_1.hasStoredCredentials)()) {
+            return true;
+        }
+        // Then check legacy configuration file
         return fs_1.default.existsSync(this.config.configPath);
     }
     /**
@@ -97,6 +107,15 @@ class AutoSetupManager {
      * Start the Configuration UI
      */
     async startConfigurationUI() {
+        // Skip UI setup in MCP mode
+        if (process.env.MCP_MODE === 'true' || process.env.SKIP_UI_SETUP === 'true') {
+            console.error('⚠️ Configuration UI is disabled in MCP mode');
+            console.error('💡 Please configure using environment variables:');
+            console.error('   JIRA_URL=https://your-company.atlassian.net');
+            console.error('   JIRA_USERNAME=your-email@company.com');
+            console.error('   JIRA_API_TOKEN=your-api-token');
+            return false;
+        }
         if (this.setupInProgress) {
             console.error('⚠️  Setup already in progress...');
             return false;
@@ -223,6 +242,32 @@ class AutoSetupManager {
      * Show fallback instructions if automatic setup fails
      */
     showFallbackInstructions() {
+        // In MCP mode, show environment variable instructions
+        if (process.env.MCP_MODE === 'true' || process.env.SKIP_UI_SETUP === 'true') {
+            console.error('\n💡 MCP Mode Configuration Instructions:\n');
+            console.error('Set the following environment variables in your MCP configuration:');
+            console.error('');
+            console.error('{');
+            console.error('  "mcpServers": {');
+            console.error('    "Jira Integration MCP": {');
+            console.error('      "command": "npx",');
+            console.error('      "args": ["-y", "github:techrivers/AtlassianJira-MCP-Integration"],');
+            console.error('      "env": {');
+            console.error('        "JIRA_URL": "https://your-company.atlassian.net",');
+            console.error('        "JIRA_USERNAME": "your-email@company.com",');
+            console.error('        "JIRA_API_TOKEN": "your-api-token",');
+            console.error('        "MCP_MODE": "true"');
+            console.error('      }');
+            console.error('    }');
+            console.error('  }');
+            console.error('}');
+            console.error('\n📋 Optional environment variables:');
+            console.error('   JIRA_PROJECT_KEY=PROJ (default project)');
+            console.error('   JIRA_DEFAULT_ASSIGNEE=user@company.com');
+            console.error('   JIRA_DEFAULT_PRIORITY=Medium');
+            console.error('');
+            return;
+        }
         console.error('\n❌ Automated setup failed. Please follow these manual steps:\n');
         console.error('1. Open a new terminal window');
         console.error('2. Navigate to the config-ui directory:');

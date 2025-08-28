@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "Atlassian Jira Integration (Secure)": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@techrivers/atlassianjira-mcp-integration@latest"
+      ],
+      "env": {
+        "MCP_MODE": "true",
+        "SECURE_CREDENTIAL_MODE": "true"
+      }
+    }
+  }
+}

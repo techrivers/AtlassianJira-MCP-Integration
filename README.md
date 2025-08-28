@@ -32,13 +32,43 @@
 
 ## 🚀 **Quick Start (Remote Installation)**
 
-### **For Claude Desktop Users:**
+### **Method 1: Environment Variable Configuration (Recommended for MCP)**
 
 **1. Add to Claude Desktop Configuration**
 
-Edit your Claude Desktop config file:
+Edit your Claude Desktop config file with environment variables:
 - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - **Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "Jira Integration MCP": {
+      "command": "npx",
+      "args": ["-y", "github:techrivers/AtlassianJira-MCP-Integration"],
+      "env": {
+        "JIRA_URL": "https://your-company.atlassian.net",
+        "JIRA_USERNAME": "your-email@company.com",
+        "JIRA_API_TOKEN": "your-api-token",
+        "MCP_MODE": "true"
+      }
+    }
+  }
+}
+```
+
+**2. Get Your Jira API Token**
+- Visit [Atlassian API Tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
+- Create a new token
+- Replace `your-api-token` in the configuration above
+
+**3. Restart Claude Desktop**
+
+**4. Ready to Use!** - No additional setup needed
+
+### **Method 2: Dynamic Configuration (Interactive Setup)**
+
+**1. Add Basic Configuration**
 
 ```json
 {
@@ -266,17 +296,40 @@ The Activity Timeline tools are disabled because they require the Activity Timel
 
 ## 🔧 **Advanced Configuration**
 
-### **Environment Variables (Optional):**
-You can also use environment variables instead of the configuration file:
+### **Environment Variables (MCP Mode):**
+For MCP deployment, use environment variables in your configuration:
 
-```bash
-export JIRA_URL="https://your-company.atlassian.net"
-export JIRA_USERNAME="your-email@company.com"
-export JIRA_API_TOKEN="your-api-token"
-export JIRA_PROJECT_KEY="PROJ"
-export JIRA_DEFAULT_ASSIGNEE="team-lead@company.com"
-export JIRA_DEFAULT_PRIORITY="Medium"
+```json
+{
+  "mcpServers": {
+    "Jira Integration MCP": {
+      "command": "npx",
+      "args": ["-y", "github:techrivers/AtlassianJira-MCP-Integration"],
+      "env": {
+        "JIRA_URL": "https://your-company.atlassian.net",
+        "JIRA_USERNAME": "your-email@company.com",
+        "JIRA_API_TOKEN": "your-api-token",
+        "MCP_MODE": "true",
+        "JIRA_PROJECT_KEY": "PROJ",
+        "JIRA_DEFAULT_ASSIGNEE": "team-lead@company.com",
+        "JIRA_DEFAULT_PRIORITY": "Medium"
+      }
+    }
+  }
+}
 ```
+
+**Required Environment Variables:**
+- `JIRA_URL` - Your Jira instance URL
+- `JIRA_USERNAME` - Your Jira username/email
+- `JIRA_API_TOKEN` - Your Jira API token
+- `MCP_MODE` - Set to "true" to enable MCP-compliant mode
+
+**Optional Environment Variables:**
+- `JIRA_PROJECT_KEY` - Default project for task creation
+- `JIRA_DEFAULT_ASSIGNEE` - Default assignee for new tasks
+- `JIRA_DEFAULT_PRIORITY` - Default priority level
+- `SKIP_UI_SETUP` - Set to "true" to skip UI setup completely
 
 ### **Multiple Jira Instances:**
 The dynamic configuration system supports switching between different Jira instances:

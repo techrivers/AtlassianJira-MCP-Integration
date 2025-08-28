@@ -132,13 +132,13 @@ async function parseGoogleSheetFromUrl(url: string): Promise<any[]> {
         }
 
         console.error(`Fetching Google Sheet: ${csvUrl}`);
-        const fetch = await import('node-fetch');
+        const fetch = (await import('node-fetch')).default;
         
         // Use AbortController for timeout implementation
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
         
-        const response = await fetch.default(csvUrl, { signal: controller.signal });
+        const response = await fetch(csvUrl, { signal: controller.signal as any });
         clearTimeout(timeoutId); // Clear timeout once fetch completes
 
         if (!response.ok) {

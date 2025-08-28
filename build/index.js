@@ -48,7 +48,13 @@ The AtlassianJira MCP Integration server requires Node.js v${requiredNodeVersion
 
 For more help, see: https://github.com/techrivers/AtlassianJira-MCP-Integration
 `);
-    process.exit(1);
+    // In MCP mode, don't exit - continue with graceful fallback
+    if (process.env.MCP_MODE !== 'true') {
+        process.exit(1);
+    }
+    else {
+        console.error('⚠️ Running in MCP mode with incompatible Node.js version - some features may not work correctly');
+    }
 }
 console.error(`✅ Node.js compatibility check passed (v${currentVersion})`);
 const mcp_js_1 = require("@modelcontextprotocol/sdk/server/mcp.js");
@@ -63,6 +69,8 @@ const sheetToJiraStories_1 = require("./tools/sheetToJiraStories");
 const configurationTools_1 = require("./tools/configurationTools");
 const meetingNotesToJira_1 = require("./tools/meetingNotesToJira");
 const setupUtilities_1 = require("./utils/setupUtilities");
+const credentialLoader_1 = require("./utils/credentialLoader");
+const helpSystem_1 = require("./cli/helpSystem");
 // Handle CLI arguments
 const args = process.argv.slice(2);
 if (args.includes('--version')) {
@@ -71,53 +79,98 @@ if (args.includes('--version')) {
     console.log(pkg.version);
     process.exit(0);
 }
+if (args.includes('--configure')) {
+    // Launch secure CLI configuration tool
+    console.error('🔐 Starting Secure Jira Configuration Tool...\n');
+    import('./cli/secureConfigure.js').then(async ({ runSecureCLIConfiguration }) => {
+        const success = await runSecureCLIConfiguration();
+        console.error(success ? '\n✅ Configuration completed successfully!' : '\n❌ Configuration failed or was cancelled.');
+        process.exit(success ? 0 : 1);
+    }).catch((error) => {
+        console.error('❌ Failed to start secure configuration:', error);
+        process.exit(1);
+    });
+    // Don't continue with normal execution - exit early
+    process.exit(0);
+}
 if (args.includes('--help')) {
+    // Check for specific help topics
+    if (args.includes('--security')) {
+        (0, helpSystem_1.showSecurityDetailsHelp)();
+        process.exit(0);
+    }
+    if (args.includes('--troubleshoot')) {
+        (0, helpSystem_1.showTroubleshootingHelp)();
+        process.exit(0);
+    }
+    if (args.includes('--mcp')) {
+        (0, helpSystem_1.showMCPConfigurationExample)();
+        process.exit(0);
+    }
+    // Default help
     console.log(`
-AtlassianJira MCP Integration Server
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                   AtlassianJira MCP Integration Server                     │
+│                        Enterprise-Grade Jira Integration                    │
+└─────────────────────────────────────────────────────────────────────────────┘
 
-Usage: atlassianjira-mcp-integration [options]
+USAGE: atlassianjira-mcp-integration [options]
 
-Options:
-  --version     Show version number
-  --help        Show this help message
-  --setup       Force run the configuration setup UI
+📋 MAIN COMMANDS:
+  --configure   🔐 Launch secure credential configuration (RECOMMENDED)
+  --version     📊 Show version number
+  --help        📚 Show this help message
 
-Configuration:
-  The server will automatically detect if configuration is needed and
-  launch the setup UI in your browser for first-time setup.
+🔐 SECURE CONFIGURATION (Recommended):
+  atlassianjira-mcp-integration --configure
+  
+  Enterprise-grade security features:
+  ✅ Hidden API token input (never displayed)
+  ✅ Real-time connection validation
+  ✅ AES-256 encrypted credential storage
+  ✅ Zero exposure to AI systems
+  ✅ Cross-platform compatibility
 
-  Configuration is saved to: ~/.jira-mcp.env
+📚 ADDITIONAL HELP:
+  --help --security      🛡️  Detailed security architecture
+  --help --troubleshoot  🔧 Common issues and solutions
+  --help --mcp           📋 Claude Desktop configuration
 
-  Required fields:
-    JIRA_URL=https://your-company.atlassian.net
-    JIRA_USERNAME=your-email@company.com
-    JIRA_API_TOKEN=your-api-token
-    
-  Optional fields:
-    JIRA_PROJECT_KEY=PROJ
-    JIRA_DEFAULT_ASSIGNEE=team-lead@company.com
-    JIRA_DEFAULT_PRIORITY=Medium
+🚀 QUICK START GUIDE:
+  1. Run: atlassianjira-mcp-integration --configure
+  2. Follow the secure setup wizard
+  3. Add simple MCP config to Claude Desktop (no credentials)
+  4. Restart Claude Desktop
+  5. Start using Jira with Claude!
 
-First-time Setup:
-  1. The Configuration UI will open automatically in your browser
-  2. Enter your Jira credentials
-  3. Test the connection to verify credentials
-  4. Save the configuration
-  5. The MCP server will start automatically
+📍 REQUIRED INFORMATION:
+  • Jira URL: https://your-company.atlassian.net
+  • Username: your-email@company.com
+  • API Token: https://id.atlassian.com/manage-profile/security/api-tokens
 
-Manual Setup:
-  If automatic setup fails, run: npm run dev in the config-ui directory
-  Then open: http://localhost:3000
+🔗 RESOURCES:
+  • Documentation: https://github.com/techrivers/AtlassianJira-MCP-Integration
+  • Issues: https://github.com/techrivers/AtlassianJira-MCP-Integration/issues
+  • Security Guide: See --help --security
+
+⚠️  LEGACY OPTIONS (Not Recommended):
+  --setup       🔧 Force run legacy configuration UI (less secure)
 `);
     process.exit(0);
 }
 if (args.includes('--setup')) {
-    console.error('🔧 Force launching Configuration UI...');
-    setupUtilities_1.setupManager.startConfigurationUI().then(() => {
+    // In MCP mode, skip UI setup
+    if (process.env.MCP_MODE === 'true' || process.env.SKIP_UI_SETUP === 'true') {
+        console.error('⚠️ Setup UI disabled in MCP mode - please configure via environment variables');
+    }
+    else {
+        console.error('🔧 Force launching Configuration UI...');
+        setupUtilities_1.setupManager.startConfigurationUI().then(() => {
+            process.exit(0);
+        });
+        // Exit early for setup mode
         process.exit(0);
-    });
-    // Exit early for setup mode
-    process.exit(0);
+    }
 }
 // Global server instance
 let server;
@@ -127,7 +180,24 @@ const possibleEnvPaths = [
     path_1.default.resolve(process.env.HOME || "", ".jira-mcp.env"),
     path_1.default.resolve(__dirname, "../.env")
 ];
-function loadEnvironmentConfiguration() {
+async function loadEnvironmentConfiguration() {
+    // First try to load secure credentials
+    try {
+        await (0, credentialLoader_1.setupJiraEnvironment)();
+        if (process.env.JIRA_URL && process.env.JIRA_USERNAME && process.env.JIRA_API_TOKEN) {
+            console.error('✅ Using secure credential configuration');
+            return true;
+        }
+    }
+    catch (error) {
+        console.error('⚠️  Failed to load secure credentials, trying fallback methods');
+    }
+    // Fallback: check if all required environment variables are already set
+    if (process.env.JIRA_URL && process.env.JIRA_USERNAME && process.env.JIRA_API_TOKEN) {
+        console.error('✅ Using environment variables for configuration');
+        return true;
+    }
+    // Then check configuration files
     for (const envPath of possibleEnvPaths) {
         if (fs_1.default.existsSync(envPath)) {
             dotenv_1.default.config({ path: envPath });
@@ -174,11 +244,33 @@ async function startMCPServer() {
 }
 async function checkConfigurationAndStart() {
     try {
+        // In MCP mode, prioritize environment variables and skip UI setup
+        if (process.env.MCP_MODE === 'true' || process.env.SKIP_UI_SETUP === 'true') {
+            console.error('🚀 MCP mode detected - checking environment configuration...');
+            const configLoaded = await loadEnvironmentConfiguration();
+            if (configLoaded) {
+                console.error('✅ Environment configuration loaded successfully');
+                await startMCPServer();
+                return;
+            }
+            else {
+                console.error('✅ Zero-configuration mode detected');
+                console.error('🎯 No Jira configuration required to start');
+                console.error('💬 Configure your Jira connection through conversation with Claude:');
+                console.error('   • "I need to set up my Jira connection"');
+                console.error('   • "Help me configure Jira integration"');
+                console.error('   • "What Jira settings do I need?"');
+                console.error('');
+                console.error('🚀 Starting MCP server with dynamic configuration tools...');
+                await startMCPServer();
+                return;
+            }
+        }
         // Check if configuration exists
         if (setupUtilities_1.setupManager.hasConfiguration()) {
             console.error('✅ Configuration found, loading...');
             // Load existing configuration
-            const configLoaded = loadEnvironmentConfiguration();
+            const configLoaded = await loadEnvironmentConfiguration();
             if (!configLoaded) {
                 console.error('⚠️  Configuration file exists but could not be loaded');
             }
@@ -194,14 +286,32 @@ async function checkConfigurationAndStart() {
             console.error('❌ Configuration UI not found.');
             console.error('💡 Please ensure the config-ui directory exists in your project.');
             setupUtilities_1.setupManager.showFallbackInstructions();
-            process.exit(1);
+            // In MCP environments, don't exit - start server anyway
+            if (process.env.MCP_MODE === 'true') {
+                console.error('🚀 Starting MCP server with zero-configuration mode');
+                console.error('💬 Use Claude conversation to configure Jira connection');
+                await startMCPServer();
+                return;
+            }
+            else {
+                process.exit(1);
+            }
         }
         // Start the Configuration UI
         const setupStarted = await setupUtilities_1.setupManager.startConfigurationUI();
         if (!setupStarted) {
             console.error('❌ Failed to start automated setup.');
             setupUtilities_1.setupManager.showFallbackInstructions();
-            process.exit(1);
+            // In MCP environments, don't exit - start server anyway
+            if (process.env.MCP_MODE === 'true') {
+                console.error('🚀 Starting MCP server with zero-configuration mode');
+                console.error('💬 Use Claude conversation to configure Jira connection');
+                await startMCPServer();
+                return;
+            }
+            else {
+                process.exit(1);
+            }
         }
         // Wait for configuration to be completed
         // This will be handled by the setupManager's monitoring
@@ -209,21 +319,38 @@ async function checkConfigurationAndStart() {
     catch (error) {
         console.error('❌ Error during configuration check:', error);
         setupUtilities_1.setupManager.showFallbackInstructions();
-        process.exit(1);
+        // In MCP environments, don't exit - start server anyway
+        if (process.env.MCP_MODE === 'true') {
+            console.error('🚀 Starting MCP server with zero-configuration mode');
+            console.error('💬 Use Claude conversation to configure Jira connection');
+            await startMCPServer();
+            return;
+        }
+        else {
+            process.exit(1);
+        }
     }
 }
 // Handle configuration completion
 process.on('configuration-ready', async () => {
     console.error('🔄 Configuration completed, loading and starting MCP server...');
     // Load the new configuration
-    const configLoaded = loadEnvironmentConfiguration();
+    const configLoaded = await loadEnvironmentConfiguration();
     if (configLoaded) {
         // Start the MCP server
         await startMCPServer();
     }
     else {
         console.error('❌ Failed to load the saved configuration');
-        process.exit(1);
+        // In MCP mode, don't exit - start server anyway
+        if (process.env.MCP_MODE === 'true') {
+            console.error('🚀 Starting MCP server with zero-configuration mode');
+            console.error('💬 Use Claude conversation to configure Jira connection');
+            await startMCPServer();
+        }
+        else {
+            process.exit(1);
+        }
     }
 });
 // Handle process cleanup
@@ -241,12 +368,18 @@ process.on('SIGTERM', () => {
 process.on('uncaughtException', (error) => {
     console.error('❌ Uncaught exception:', error);
     setupUtilities_1.setupManager.cleanup();
-    process.exit(1);
+    // In MCP mode, try to continue running
+    if (process.env.MCP_MODE !== 'true') {
+        process.exit(1);
+    }
 });
 process.on('unhandledRejection', (reason, promise) => {
     console.error('❌ Unhandled rejection at:', promise, 'reason:', reason);
     setupUtilities_1.setupManager.cleanup();
-    process.exit(1);
+    // In MCP mode, try to continue running
+    if (process.env.MCP_MODE !== 'true') {
+        process.exit(1);
+    }
 });
 // Main entry point
 async function main() {
@@ -258,5 +391,16 @@ async function main() {
 main().catch((error) => {
     console.error('❌ Fatal error in main():', error);
     setupUtilities_1.setupManager.cleanup();
-    process.exit(1);
+    // In MCP mode, try to start basic server
+    if (process.env.MCP_MODE === 'true') {
+        console.error('🚀 Starting MCP server with zero-configuration mode');
+        console.error('💬 Use Claude conversation to configure Jira connection');
+        startMCPServer().catch((mcpError) => {
+            console.error('❌ Failed to start MCP server:', mcpError);
+            process.exit(1);
+        });
+    }
+    else {
+        process.exit(1);
+    }
 });

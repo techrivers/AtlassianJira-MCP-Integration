@@ -30,7 +30,8 @@ async function makeJiraRequest(url, data, config, method = 'PUT') {
             error.message ||
                 "An unknown error occurred.";
         console.error("Error making Jira request:", errorMessage);
-        console.error("Full error response:", JSON.stringify(error.response?.data, null, 2));
+        if (process.env.DEBUG)
+            console.error("Full error response:", JSON.stringify(error.response?.data, null, 2));
         throw new Error(`Failed to update issue: ${errorMessage}`);
     }
 }
@@ -79,6 +80,7 @@ function registerUpdateIssueTool(server) {
                 Accept: "application/json",
                 "Content-Type": "application/json",
             },
+            timeout: 15000,
         };
         let updatedFields = [];
         let skippedFields = [];

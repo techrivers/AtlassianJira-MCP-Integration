@@ -2,6 +2,10 @@
 .env
 .env.local
 .env.*.local
+# Prevent committing any other env files but keep sample
+.env.*
+*.env
+!.env.example
 
 # Node
 node_modules/
