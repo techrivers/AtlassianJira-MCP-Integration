@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "Jira Integration MCP": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "github:techrivers/AtlassianJira-MCP-Integration"
+      ],
+      "env": {
+        "JIRA_URL": "https://your-company.atlassian.net",
+        "JIRA_USERNAME": "your-email@company.com",
+        "JIRA_API_TOKEN": "your-api-token",
+        "MCP_MODE": "true",
+        "JIRA_PROJECT_KEY": "PROJ",
+        "JIRA_DEFAULT_ASSIGNEE": "team-lead@company.com",
+        "JIRA_DEFAULT_PRIORITY": "Medium"
+      }
+    }
+  }
+}

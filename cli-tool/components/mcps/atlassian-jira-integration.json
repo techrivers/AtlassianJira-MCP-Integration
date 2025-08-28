@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "Atlassian Jira Integration MCP": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@techrivers/atlassianjira-mcp-integration@latest"
+      ],
+      "env": {
+        "MCP_MODE": "true",
+        "SKIP_UI_SETUP": "true"
+      }
+    }
+  }
+}

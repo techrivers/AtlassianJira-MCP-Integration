@@ -8,6 +8,7 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const os_1 = __importDefault(require("os"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const secureCredentialManager_1 = require("./secureCredentialManager");
 class DynamicJiraConfig {
     configPath;
     config;
@@ -16,11 +17,20 @@ class DynamicJiraConfig {
         this.config = this.loadConfig();
     }
     /**
-     * Load configuration from file and environment variables
+     * Load configuration from secure storage and environment variables
      */
     loadConfig() {
         const config = {};
-        // Try to load from file first
+        // SECURITY ENHANCEMENT: Try secure credential manager first
+        try {
+            // Note: For synchronous loading, we'll use the async method in background
+            // This maintains compatibility with existing synchronous config loading
+            this.loadSecureConfigAsync(config);
+        }
+        catch (error) {
+            console.error('Warning: Could not load secure credentials, falling back to legacy methods');
+        }
+        // LEGACY FALLBACK: Try to load from file (less secure)
         if (fs_1.default.existsSync(this.configPath)) {
             const envConfig = dotenv_1.default.parse(fs_1.default.readFileSync(this.configPath, 'utf8'));
             config.url = envConfig.JIRA_URL;
@@ -46,6 +56,25 @@ class DynamicJiraConfig {
         return config;
     }
     /**
+     * Async helper to load secure configuration
+     */
+    async loadSecureConfigAsync(config) {
+        try {
+            const secureConfig = await secureCredentialManager_1.secureCredentialManager.getCredentials();
+            if (secureConfig) {
+                config.url = secureConfig.url;
+                config.username = secureConfig.username;
+                config.apiToken = secureConfig.apiToken;
+                config.projectKey = secureConfig.projectKey;
+                config.defaultAssignee = secureConfig.defaultAssignee;
+                config.defaultPriority = secureConfig.defaultPriority;
+            }
+        }
+        catch (error) {
+            console.error('Error loading secure configuration:', error);
+        }
+    }
+    /**
      * Get current configuration
      */
     getConfig() {
@@ -64,6 +93,8 @@ class DynamicJiraConfig {
      * Save configuration to file
      */
     saveConfig() {
+        // Always allow saving configuration to local file for seamless user experience
+        // This enables zero-configuration deployment where users configure through Claude conversation
         const envContent = [
             this.config.url ? `JIRA_URL=${this.config.url}` : '',
             this.config.username ? `JIRA_USERNAME=${this.config.username}` : '',
@@ -109,6 +140,7 @@ class DynamicJiraConfig {
      */
     resetConfig() {
         this.config = {};
+        // Always allow resetting configuration file for seamless user experience
         if (fs_1.default.existsSync(this.configPath)) {
             fs_1.default.unlinkSync(this.configPath);
         }

@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import dotenv from 'dotenv';
+import { secureCredentialManager } from './secureCredentialManager';
 
 export interface JiraConfig {
     url?: string;
@@ -22,12 +23,21 @@ export class DynamicJiraConfig {
     }
 
     /**
-     * Load configuration from file and environment variables
+     * Load configuration from secure storage and environment variables
      */
     private loadConfig(): JiraConfig {
         const config: JiraConfig = {};
 
-        // Try to load from file first
+        // SECURITY ENHANCEMENT: Try secure credential manager first
+        try {
+            // Note: For synchronous loading, we'll use the async method in background
+            // This maintains compatibility with existing synchronous config loading
+            this.loadSecureConfigAsync(config);
+        } catch (error) {
+            console.error('Warning: Could not load secure credentials, falling back to legacy methods');
+        }
+
+        // LEGACY FALLBACK: Try to load from file (less secure)
         if (fs.existsSync(this.configPath)) {
             const envConfig = dotenv.parse(fs.readFileSync(this.configPath, 'utf8'));
             config.url = envConfig.JIRA_URL;
@@ -47,6 +57,25 @@ export class DynamicJiraConfig {
         if (process.env.JIRA_DEFAULT_PRIORITY) config.defaultPriority = process.env.JIRA_DEFAULT_PRIORITY;
 
         return config;
+    }
+
+    /**
+     * Async helper to load secure configuration
+     */
+    private async loadSecureConfigAsync(config: JiraConfig): Promise<void> {
+        try {
+            const secureConfig = await secureCredentialManager.getCredentials();
+            if (secureConfig) {
+                config.url = secureConfig.url;
+                config.username = secureConfig.username;
+                config.apiToken = secureConfig.apiToken;
+                config.projectKey = secureConfig.projectKey;
+                config.defaultAssignee = secureConfig.defaultAssignee;
+                config.defaultPriority = secureConfig.defaultPriority;
+            }
+        } catch (error) {
+            console.error('Error loading secure configuration:', error);
+        }
     }
 
     /**
@@ -71,6 +100,9 @@ export class DynamicJiraConfig {
      * Save configuration to file
      */
     private saveConfig(): void {
+        // Always allow saving configuration to local file for seamless user experience
+        // This enables zero-configuration deployment where users configure through Claude conversation
+
         const envContent = [
             this.config.url ? `JIRA_URL=${this.config.url}` : '',
             this.config.username ? `JIRA_USERNAME=${this.config.username}` : '',
@@ -123,6 +155,8 @@ export class DynamicJiraConfig {
      */
     public resetConfig(): void {
         this.config = {};
+        
+        // Always allow resetting configuration file for seamless user experience
         if (fs.existsSync(this.configPath)) {
             fs.unlinkSync(this.configPath);
         }
