@@ -74,50 +74,49 @@ import { credentialLoader, setupJiraEnvironment } from "./utils/credentialLoader
 import { showSecurityDetailsHelp, showTroubleshootingHelp, showMCPConfigurationExample } from "./cli/helpSystem";
 
 // Handle CLI arguments
-const args = process.argv.slice(2);
-if (args.includes('--version')) {
-    const packagePath = path.resolve(__dirname, '../package.json');
-    const pkg = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
-    console.log(pkg.version);
-    process.exit(0);
-}
+async function handleCLIArguments(): Promise<boolean> {
+    const args = process.argv.slice(2);
+    
+    if (args.includes('--version')) {
+        const packagePath = path.resolve(__dirname, '../package.json');
+        const pkg = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+        console.log(pkg.version);
+        process.exit(0);
+    }
 
-if (args.includes('--configure')) {
-    // Launch secure CLI configuration tool
-    console.error('🔐 Starting Secure Jira Configuration Tool...\n');
-    
-    import('./cli/secureConfigure.js').then(async ({ runSecureCLIConfiguration }) => {
-        const success = await runSecureCLIConfiguration();
-        console.error(success ? '\n✅ Configuration completed successfully!' : '\n❌ Configuration failed or was cancelled.');
-        process.exit(success ? 0 : 1);
-    }).catch((error) => {
-        console.error('❌ Failed to start secure configuration:', error);
-        process.exit(1);
-    });
-    
-    // Don't continue with normal execution - exit early
-    process.exit(0);
-}
-
-if (args.includes('--help')) {
-    // Check for specific help topics
-    if (args.includes('--security')) {
-        showSecurityDetailsHelp();
-        process.exit(0);
+    if (args.includes('--configure')) {
+        console.error('🔐 Starting Secure Jira Configuration Tool...\n');
+        try {
+            const { runSecureCLIConfiguration } = await import('./cli/secureConfigure.js');
+            const success = await runSecureCLIConfiguration();
+            console.error(success ? '\n✅ Configuration completed successfully!' : '\n❌ Configuration failed or was cancelled.');
+            process.exit(success ? 0 : 1);
+        } catch (error) {
+            console.error('❌ Failed to start secure configuration:', error);
+            process.exit(1);
+        }
+        return true; // CLI handled
     }
     
-    if (args.includes('--troubleshoot')) {
-        showTroubleshootingHelp();
-        process.exit(0);
-    }
-    
-    if (args.includes('--mcp')) {
-        showMCPConfigurationExample();
-        process.exit(0);
-    }
-    
-    // Default help
-    console.log(`
+    if (args.includes('--help')) {
+        // Check for specific help topics
+        if (args.includes('--security')) {
+            showSecurityDetailsHelp();
+            process.exit(0);
+        }
+        
+        if (args.includes('--troubleshoot')) {
+            showTroubleshootingHelp();
+            process.exit(0);
+        }
+        
+        if (args.includes('--mcp')) {
+            showMCPConfigurationExample();
+            process.exit(0);
+        }
+        
+        // Default help
+        console.log(`
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                   AtlassianJira MCP Integration Server                     │
 │                        Enterprise-Grade Jira Integration                    │
@@ -165,21 +164,25 @@ USAGE: atlassianjira-mcp-integration [options]
 ⚠️  LEGACY OPTIONS (Not Recommended):
   --setup       🔧 Force run legacy configuration UI (less secure)
 `);
-    process.exit(0);
-}
-
-if (args.includes('--setup')) {
-    // In MCP mode, skip UI setup
-    if (process.env.MCP_MODE === 'true' || process.env.SKIP_UI_SETUP === 'true') {
-        console.error('⚠️ Setup UI disabled in MCP mode - please configure via environment variables');
-    } else {
-        console.error('🔧 Force launching Configuration UI...');
-        setupManager.startConfigurationUI().then(() => {
-            process.exit(0);
-        });
-        // Exit early for setup mode
         process.exit(0);
     }
+
+    if (args.includes('--setup')) {
+        // In MCP mode, skip UI setup
+        if (process.env.MCP_MODE === 'true' || process.env.SKIP_UI_SETUP === 'true') {
+            console.error('⚠️ Setup UI disabled in MCP mode - please configure via environment variables');
+        } else {
+            console.error('🔧 Force launching Configuration UI...');
+            setupManager.startConfigurationUI().then(() => {
+                process.exit(0);
+            });
+            // Exit early for setup mode
+            process.exit(0);
+        }
+        return true; // CLI handled
+    }
+    
+    return false; // Continue with normal execution
 }
 
 // Global server instance
@@ -419,6 +422,12 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // Main entry point
 async function main(): Promise<void> {
+    // Handle CLI arguments first
+    const cliHandled = await handleCLIArguments();
+    if (cliHandled) {
+        return; // CLI argument was handled, don't continue with server startup
+    }
+    
     console.error('🚀 AtlassianJira MCP Integration Server');
     console.error('📋 Checking configuration and starting setup if needed...\n');
     
