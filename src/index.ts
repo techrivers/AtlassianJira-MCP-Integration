@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Node.js version compatibility check
-const requiredNodeVersion = '20.0.0';
+const requiredNodeVersion = '16.0.0';
 const currentVersion = process.version.substring(1); // Remove 'v' prefix
 
 function compareVersions(version1: string, version2: string): number {
@@ -31,10 +31,10 @@ The AtlassianJira MCP Integration server requires Node.js v${requiredNodeVersion
 
 1. Update Node.js:
    • Visit: https://nodejs.org/
-   • Download and install Node.js v20+ (LTS recommended)
+   • Download and install Node.js v16+ (LTS recommended)
 
 2. If using a version manager (nvm):
-   • Run: nvm install 20 && nvm use 20
+   • Run: nvm install 16 && nvm use 16
 
 3. Clear npx cache and retry:
    • Run: npx clear-npx-cache

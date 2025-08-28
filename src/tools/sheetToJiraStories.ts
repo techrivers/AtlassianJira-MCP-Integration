@@ -132,20 +132,18 @@ async function parseGoogleSheetFromUrl(url: string): Promise<any[]> {
         }
 
         console.error(`Fetching Google Sheet: ${csvUrl}`);
-        const fetch = (await import('node-fetch')).default;
         
-        // Use AbortController for timeout implementation
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-        
-        const response = await fetch(csvUrl, { signal: controller.signal as any });
-        clearTimeout(timeoutId); // Clear timeout once fetch completes
+        // Use axios for Node.js 16 compatibility instead of fetch/AbortController
+        const response = await axios.get(csvUrl, {
+            timeout: 10000,
+            responseType: 'text'
+        });
 
-        if (!response.ok) {
+        if (response.status !== 200) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}. Make sure the Google Sheet is publicly accessible.`);
         }
 
-        const csv = await response.text();
+        const csv = response.data;
         const records = parse(csv, {
             columns: true,
             skip_empty_lines: true,
@@ -159,7 +157,7 @@ async function parseGoogleSheetFromUrl(url: string): Promise<any[]> {
         console.error(`Fetched ${records.length} rows from Google Sheet`);
         return records;
     } catch (error: any) {
-        if (error.name === 'AbortError') {
+        if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
             console.error('Google Sheet fetch request timed out after 10 seconds');
             throw new Error('Request timed out while fetching Google Sheet. Please check your internet connection or try again later.');
         } else {
